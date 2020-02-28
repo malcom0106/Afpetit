@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Afpétit</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="@Url.Action("Index","Home")">Bon Afpétit ! </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarRight" aria-controls="navbarRight" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" id="navbarRight">
+            <ul class="navbar-nav ml-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-info" href="@Url.Action("View","Home")" id="navbardrop" data-toggle="dropdown">
+                        <i class="fa fa-shopping-basket"></i>
+                        <span id="badgepanier" class="">0,00 Eur.</span>
+                    </a>
+                    <div id="dropdown" class="dropdown-menu">
+                        <span id="spandropdown"></span>
+                        <div class='text-center'><button id='btncommande' class='btn btn-primary'>Commander</button></div>
+                    </div>
+
+                </div>
+                @{
+                    string isConnected = "";
+                    if (Session["utilisateur"] != null)
+                    {
+                        Afpetit.Models.Utilisateur utilisateur = (Afpetit.Models.Utilisateur)Session["utilisateur"];
+                        if (utilisateur != null)
+                        {
+                            isConnected = "true";
+                            <span class="navbar-text">
+                                @utilisateur.Nom @utilisateur.Prenom
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        isConnected = "false";
+                        <li class="nav-item">
+                            @Html.ActionLink("Connexion", "Connexion", "Utilisateurs", null, new { @class = "nav-link" })
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </nav>
+    <!-- Full Page Image Header with Vertically Centered Content -->
+    <header class="masthead">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 text-center pt-5 mt-5">
+                    <h1 class="text-light">Vos plats préférés, livrés directement à l'AFPA </h1>
+                    <h4 class="text-light">Bon Afpétit !!! </h4>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div id="ModalLogin" class="modal fade bs-example-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-width="760">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Se connecter</h3>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>                    
+                </div>
+                @using (Html.BeginForm("Connexion", "Utilisateurs", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <div class="row-fluid">
+                            <div class="form-group">
+                                <label for="Matricule">Matricule</label>
+                                @Html.TextBox("Matricule", null, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label for="Password">Password</label>
+                                @Html.TextBox("Password", null, new { @class = "form-control" })
+                            </div>                            
+                            <button id="btnConnexion" class="btn btn-primary">Connection</button>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </div>
+    <div class="container body-content">
+
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Afpétit</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+        $(document).ready(function () {
+            ////////////////////////////PANIER /////////////////////////////////
+            // lorsque l'on passe la souris sur le btn panier
+            $("#navbardrop").hover(function () {
+                let data = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Session.SessionID)'};
+                $.ajax({
+                    //Appel en AJAX du Service Web
+                    url: '@Url.Action("GetProduits","Sw")',
+                    // Methode de connexion en GET
+                    type: 'POST',
+                    // Formatage au format JSON des data envoyées
+                    data: JSON.stringify(data),
+                    // Data que l'on souhaite envoyé
+                    contentType: 'application/json; charset=utf-8',
+                    // Type de Donnees Attendu : JSON
+                    datatype: 'JSON',
+                    // En cas de succes de l'appel alors
+                    success: function (data) {
+                        //Exploitation de notre JSON
+                        let html = "<ul>";
+                        for (i = 0; i < data.length; i++) {
+                                html += "<li class='dropdown-item'>";
+                                html += "" + data[i].Nom + " ";
+                                html += " - " + data[i].Quantite + " ";
+                                html += "</li>";
+                        }
+                        html += "</ul>";
+                        $("#spandropdown").html(html);
+                    },
+                    error: function () {
+                        // En cas d'erreur on affiche une fenetre d'alerte
+                        $("#spandropdown").html("<ul><li class='dropdown-item'>Aucun produit dans le panier</li></ul>");
+                    }
+                });
+                $("#dropdown").dropdown('show');
+            });
+            //Masquer la DropDown dés que l'on sort de celle ci
+            $("#dropdown").mouseleave(function () {
+                $("#dropdown").dropdown('hide');
+            });
+            // Redirection au clic sur le btn panier
+            $("#navbardrop").click(function () {
+                alert("futur redirection ");
+            });
+
+            //Clic sur le btn commander dans le panier
+            $("#btncommande").click(function () {
+                if (@isConnected) {
+                    let data = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Session.SessionID)' };
+                    callCommandeSW(data);
+                } else {
+                    $("#ModalLogin").modal('show');
+                }
+            });
+
+            //Clic Connexion dans modal connexion
+            @*$("#btnConnexion").click(function () {
+                let login = $("#Matricule").val();
+                let password = $("#Password").val();
+                let data = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Session.SessionID)','p': ''+password+'','l': ''+login+'' };
+                LoginPasswordSW(data);
+            });*@
+            //////////////////////////FIN Panier /////////////////////////////
+
+            // Fonction pour appeler le SW commande.
+            function callCommandeSW(data) {
+            // permet de preparer le JSON.stringify
+                $.ajax({
+                    //Appel en AJAX du Service Web
+                    url: '@Url.Action("SaveCommande","Sw")',
+                    // Methode de connexion en GET
+                    type: 'POST',
+                    // Formatage au format JSON des data envoyées
+                    data: JSON.stringify(data),
+                    // Data que l'on souhaite envoyé
+                    contentType: 'application/json; charset=utf-8',
+                    // Type de Donnees Attendu : JSON
+                    datatype: 'JSON',
+                    // En cas de succes de l'appel alors
+                    success: function (data) {
+                        
+                    },
+                    error: function () {
+                        // En cas d'erreur on affiche une fenetre d'alerte
+                        alert("Error callCommande !");
+                    }
+                });
+            }
+
+            function LoginPasswordSW(data) {
+                $.ajax({
+                    //Appel en AJAX du Service Web
+                    url: '@Url.Action("ConnexionUtilisateur","Sw")',
+                    // Methode de connexion en GET
+                    type: 'POST',
+                    // Formatage au format JSON des data envoyées
+                    data: JSON.stringify(data),
+                    // Data que l'on souhaite envoyé
+                    contentType: 'application/json; charset=utf-8',
+                    // Type de Donnees Attendu : JSON
+                    datatype: 'JSON',
+                    // En cas de succes de l'appel alors
+                    success: function (data) {
+                        alert(data);
+                        $("#ModalLogin").modal('hide');
+                    },
+                    error: function () {
+                        // En cas d'erreur on affiche une fenetre d'alerte
+                        alert('Error LoginPasswordIndex');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+﻿@model Afpetit.Models.Restaurant
+@{
+    ViewBag.Title = "Details " + @Model.Nom;
+}
+@{
+    Afpetit.Models.Utilisateur utilisateur = null;
+    bool isConnected = false;
+    if (Session["utilisateur"] != null)
+    {
+        utilisateur = (Afpetit.Models.Utilisateur)Session["utilisateur"];
+        isConnected = true;
+    }
+
+    //Opération ternaire
+    isConnected = (Session["utilisateur"] != null ? true : false);
+}
+
+<div id="detail_restaurant" class="card bg-light w-100">
+    <div class="imagebandeau my-1 card-img-top" style="background-image: url(../..@Model.Photos.First().Url);"></div>
+    <div class="flex-column col-12 card-body">
+        <h3 class="card-title">@Model.Nom</h3>
+        <h5 class="card-subtitle">@Model.TypeCuisine.Nom</h5>
+        <div class="card-text">
+            <address>
+                @Model.Adresse<br />
+                @Model.CodePostal @Model.Ville<br />
+                <abbr title="Téléphone Mobile">Mobile :</abbr> @Model.Mobile - <abbr title="Téléphone Fixe">Tél. :</abbr> @Model.Telephone
+            </address>
+            <p class="flex-child" id="description">
+                <small>@Model.Description</small>
+            </p>
+            <p class="w-100 text-right"><a id="voirplus" class="text-info">Voir plus ...</a></p>
+            <p>
+                <span class="badge badge-info badge-pill"> Note des avis (un jour peut etre)</span>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<hr />
+<figure class="figure">
+    <div class="col-sm-12 d-flex flex">
+        <div class="">
+            @{
+                if (Model.Menus.Count() > 0)
+                {
+                    <div id="menus">
+                        <h3>Menus</h3>
+                        @{
+                            foreach (Afpetit.Models.Menu menu in Model.Menus)
+                            {
+                                <div>
+                                    @menu.Nom
+                                </div>
+                            }
+                        }
+                    </div>
+                    <hr />
+                }
+
+                if (Model.Produits.Count() > 0)
+                {
+                    <div id="carte">
+                        <h3>A la carte</h3>
+                        @{
+                            foreach (Afpetit.Models.Produit produit in Model.Produits)
+                            {
+                                <div class="row border border-light rounded">
+                                    <div class="col-3 text-center">
+                                        <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                                            <div class="carousel-inner">
+                                                @{
+                                                    int i = 0;
+                                                    foreach (Afpetit.Models.Photo photo in produit.Photos)
+                                                    {
+                                                        if (i == 0)
+                                                        {
+                                                            <div class="carousel-item active" data-interval="4000">
+                                                                <img src="@photo.Url" class="d-block w-100 rounded" alt="@photo.Nom">
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="carousel-item" data-interval="4000">
+                                                                <img src="@photo.Url" class="d-block w-100 rounded" alt="@photo.Nom">
+                                                            </div>
+                                                        }
+                                                        i++;
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-center">@produit.Nom</div>
+                                    <div class="col-3 text-right">@produit.Prix &euro;</div>
+                                    <div class="col-2 text-center">
+                                        <button class="btn btn-outline-success btnAjax" id="btnAjax" data-idproduit="@produit.IdProduit"><i class=" fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+</figure>
+    
+    <div class="modal fade" id="ModalPanier" tabindex="-1" role="dialog" aria-labelledby="ModalPanier" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Ajout produit OK.</p>
+                    <p id="Paragraphe"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts {
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $("#voirplus").click(function () {
+                if ($("#description").attr("class") == '') {
+                    $("#description").attr("class", "flex-child");
+                    $("#voirplus").html("Voir plus ...");
+                } else {
+                    $("#description").attr("class", "");
+                    $("#voirplus").html("Réduire");
+                }
+
+            });
+            $(".btnAjax").click(function () {
+                let variable = { 'p': $(this).data("idproduit"), 's': '@Afpetit.Utilities.Cryptage.Encrypt(Convert.ToString(Session.SessionID))' };
+                callAddProduit(variable);
+                let variable2 = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Convert.ToString(Session.SessionID))' };
+                callUpdatePanier(variable2);
+            });
+        });
+        function callAddProduit(data) {
+            // permet de preparer le JSON.stringify
+                $.ajax({
+                    //Appel en AJAX du Service Web
+                    url: '@Url.Action("AddProduit","Sw")',
+                    // Methode de connexion en GET
+                    type: 'POST',
+                    // Formatage au format JSON des data envoyées
+                    data: JSON.stringify(data),
+                    // Data que l'on souhaite envoyé
+                    contentType: 'application/json; charset=utf-8',
+                    // Type de Donnees Attendu : JSON
+                    datatype: 'JSON',
+                    // En cas de succes de l'appel alors
+                    success: function (data) {
+                        $("#ModalPanier").modal('show');
+                        $("#Paragraphe").html(data);
+                    },
+                    error: function () {
+                        // En cas d'erreur on affiche une fenetre d'alerte
+                        alert("Error produit !");
+                    }
+                });
+        }
+        function callUpdatePanier(data) {
+            // Mettre à jour le badge panier.
+            $.ajax({
+                //Appel en AJAX du Service Web
+                url: '@Url.Action("GetProduits","Sw")',
+                // Methode de connexion en GET
+                type: 'POST',
+                // Formatage au format JSON des data envoyées
+                data: JSON.stringify(data),
+                // Data que l'on souhaite envoyé
+                contentType: 'application/json; charset=utf-8',
+                // Type de Donnees Attendu : JSON
+                datatype: 'JSON',
+                // En cas de succes de l'appel alors
+                success: function (data) {
+                    let compteur = 0;
+                    for (i = 0; i < data.length; i++) {
+                        compteur += data[i].Quantite * data[i].Prix;
+                    }
+                    $("#badgepanier").html(compteur+ 'Eur');
+                },
+                error: function () {
+                    // En cas d'erreur on affiche une fenetre d'alerte
+                    //alert("Error panier !");
+                }
+            });
+        }
+        </script>
+    }
+
+

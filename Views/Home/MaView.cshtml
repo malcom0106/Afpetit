@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "View";
+}
+<div id="txt"></div>
+
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var data = { 'idSession': '@Session.SessionID' };
+            $.ajax({                
+                //Appel en AJAX du Service Web
+                url: '@Url.Action("GetProduits","Sw")',
+                // Methode de connexion en GET
+                type: 'POST',
+                // Formatage au format JSON des data envoyées
+                data: JSON.stringify(data),
+                // Data que l'on souhaite envoyé
+                contentType: 'application/json; charset=utf-8',
+                // Type de Donnees Attendu : JSON
+                datatype: 'JSON',
+                // En cas de succes de l'appel alors
+                success: function (data) {
+                    //Exploitation de notre JSON
+                    var html = "<table class=\"table table-stripped\">";
+                    for (i = 0; i < data.length; i++) {
+                            html += "<tr>";
+                            html += "<td>" + data[i].Nom + "</td>";
+                            html += "<td>" + data[i].Description + "</td>";
+                            html += "<td>" + data[i].Quantité + "</td>";
+                            html += "<td><img class='img-fluid' src='" + data[i].Photo + "'/></td>";
+                            html += "</tr>";
+                    }
+                    html += "</table>";
+                    $("#txt").html(html);
+                },
+                error: function () {
+                    // En cas d'erreur on affiche une fenetre d'alerte
+                    $("#txt").attr("class", "bg-danger");
+                    $("#txt").html("Aucun Produit dans le panier");
+                }
+            });
+        });
+    </script>
+}

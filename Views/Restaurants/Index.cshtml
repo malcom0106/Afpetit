@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Afpetit.Models.Restaurant>
+
+@{
+    ViewBag.Title = "Liste des restaurants";
+}
+
+<h2>Liste des restaurant</h2>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-4 border rounded">
+            <figure class="">
+                <div class="col-12">
+                    @{
+                        if (item.Photos.Count > 0)
+                        {
+                            Afpetit.Models.Photo photo = item.Photos.FirstOrDefault();
+                            <img alt="@photo.Nom" role="presentation" src="@photo.Url" class="img-fluid">
+                        }
+                    }
+                </div>
+            </figure>
+            <div>
+                <div class="">@item.Nom • @item.Adresse</div>
+                <div class="">@item.Budget • @item.TypeCuisine.Nom</div>
+                <div class="">
+                    <div class="">
+                            <span class="">Avis</span>
+                            <div aria-hidden="true" class="">
+                                note                                
+                            </div>
+                        </div>
+                  </div>
+            </div>
+            <div class="text-center">
+                <a href="@Url.Action("Details","Restaurants",new { @Id = item.IdRestaurant })" class="btn btn-outline-success">Passer Commande</a>
+            </div>
+            
+        </div>
+    }
+</div>

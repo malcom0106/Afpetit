@@ -1,0 +1,96 @@
+﻿@model Afpetit.Models.Produit
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm("Create", "Produits", FormMethod.Post, new { enctype = "multipart/form-data" })) 
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Produit</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.IdRestaurant, "IdRestaurant", htmlAttributes: new { @class = "form-control"})
+        <div class="col-md-10">
+            @Html.DropDownList("IdRestaurant", null, htmlAttributes: new { @class = "form-control" , @Required = "Required"})
+            @Html.ValidationMessageFor(model => model.IdRestaurant, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Nom, htmlAttributes: new { @class = "form-control"})
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Nom, new { htmlAttributes = new { @class = "form-control" , @Required = "Required"} })
+            @Html.ValidationMessageFor(model => model.Nom, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.IdCategorie, "IdCategorie", htmlAttributes: new { @class = "form-control"})
+        <div class="col-md-10">
+            @Html.DropDownList("IdCategorie", null, htmlAttributes: new { @class = "form-control" , @Required = "Required"})
+            @Html.ValidationMessageFor(model => model.IdCategorie, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        Photo
+        <div class="col-md-10">
+            <input type="file" id="files" name="files" required multiple="multiple"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Prix, htmlAttributes: new { @class = "form-control"})
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Prix, new { htmlAttributes = new { @class = "form-control", @Required = "Required" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "form-control"})
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @Required = "Required" } })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Quantite, htmlAttributes: new { @class = "form-control"})
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Quantite, new { htmlAttributes = new { @class = "form-control", @Required = "Required" } })
+            @Html.ValidationMessageFor(model => model.Quantite, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Statut, htmlAttributes: new { @class = "form-control"})
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.Statut)
+                @Html.ValidationMessageFor(model => model.Statut, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

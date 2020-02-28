@@ -3,7 +3,19 @@
 @{
     ViewBag.Title = "Liste des restaurants";
 }
-
+@section entete{
+    <!-- Full Page Image Header with Vertically Centered Content -->
+    <header class="masthead">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 text-center pt-5 mt-5">
+                    <h1 class="text-light">Vos plats préférés, livrés directement à l'AFPA </h1>
+                    <h4 class="text-light">Bon Afpétit !!! </h4>
+                </div>
+            </div>
+        </div>
+    </header>
+}
 <h2>Liste des restaurant</h2>
 <div class="row">
     @foreach (var item in Model)
@@ -25,17 +37,17 @@
                 <div class="">@item.Budget • @item.TypeCuisine.Nom</div>
                 <div class="">
                     <div class="">
-                            <span class="">Avis</span>
-                            <div aria-hidden="true" class="">
-                                note                                
-                            </div>
+                        <span class="">Avis</span>
+                        <div aria-hidden="true" class="">
+                            note
                         </div>
-                  </div>
+                    </div>
+                </div>
             </div>
             <div class="text-center">
                 <a href="@Url.Action("Details","Restaurants",new { @Id = item.IdRestaurant })" class="btn btn-outline-success">Passer Commande</a>
             </div>
-            
+
         </div>
     }
 </div>

@@ -14,9 +14,14 @@
     //Opération ternaire
     isConnected = (Session["utilisateur"] != null ? true : false);
 }
-
-<div id="detail_restaurant" class="card bg-light w-100">
-    <div class="imagebandeau my-1 card-img-top" style="background-image: url(../..@Model.Photos.First().Url);"></div>
+@section entete 
+    {
+    <div id="detail_restaurant1" class="card bg-light w-100">
+        <div class="imagebandeaudetail my-1 card-img-top" style="background-image: url(../..@Model.Photos.First().Url);"></div>        
+    </div>
+}
+    
+<div id="detail_restaurant2" class="card bg-light w-100">    
     <div class="flex-column col-12 card-body">
         <h3 class="card-title">@Model.Nom</h3>
         <h5 class="card-subtitle">@Model.TypeCuisine.Nom</h5>
@@ -37,77 +42,76 @@
 
     </div>
 </div>
-
-<hr />
-<figure class="figure">
-    <div class="col-sm-12 d-flex flex">
-        <div class="">
-            @{
-                if (Model.Menus.Count() > 0)
-                {
-                    <div id="menus">
-                        <h3>Menus</h3>
-                        @{
-                            foreach (Afpetit.Models.Menu menu in Model.Menus)
-                            {
-                                <div>
-                                    @menu.Nom
-                                </div>
+    <hr />
+    <figure class="figure">
+        <div class="col-sm-12 d-flex flex">
+            <div class="">
+                @{
+                    if (Model.Menus.Count() > 0)
+                    {
+                        <div id="menus">
+                            <h3>Menus</h3>
+                            @{
+                                foreach (Afpetit.Models.Menu menu in Model.Menus)
+                                {
+                                    <div>
+                                        @menu.Nom
+                                    </div>
+                                }
                             }
-                        }
-                    </div>
-                    <hr />
-                }
+                        </div>
+                        <hr />
+                    }
 
-                if (Model.Produits.Count() > 0)
-                {
-                    <div id="carte">
-                        <h3>A la carte</h3>
-                        @{
-                            foreach (Afpetit.Models.Produit produit in Model.Produits)
-                            {
-                                <div class="row border border-light rounded">
-                                    <div class="col-2 text-center">
-                                        <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
-                                            <div class="carousel-inner">
-                                                @{
-                                                    int i = 0;
-                                                    foreach (Afpetit.Models.Photo photo in produit.Photos)
-                                                    {
-                                                        if (i == 0)
+                    if (Model.Produits.Count() > 0)
+                    {
+                        <div id="carte">
+                            <h3>A la carte</h3>
+                            @{
+                                foreach (Afpetit.Models.Produit produit in Model.Produits)
+                                {
+                                    <div class="row border border-light rounded">
+                                        <div class="col-2 text-center">
+                                            <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                                                <div class="carousel-inner">
+                                                    @{
+                                                        int i = 0;
+                                                        foreach (Afpetit.Models.Photo photo in produit.Photos)
                                                         {
-                                                            <div class="carousel-item active" data-interval="4000">
-                                                                <img src="@photo.Url" class="d-block w-100 rounded" alt="@photo.Nom">
-                                                            </div>
+                                                            if (i == 0)
+                                                            {
+                                                                <div class="carousel-item active" data-interval="4000">
+                                                                    <img src="@photo.Url" class="d-block w-100 rounded" alt="@photo.Nom">
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="carousel-item" data-interval="4000">
+                                                                    <img src="@photo.Url" class="d-block w-100 rounded" alt="@photo.Nom">
+                                                                </div>
+                                                            }
+                                                            i++;
                                                         }
-                                                        else
-                                                        {
-                                                            <div class="carousel-item" data-interval="4000">
-                                                                <img src="@photo.Url" class="d-block w-100 rounded" alt="@photo.Nom">
-                                                            </div>
-                                                        }
-                                                        i++;
                                                     }
-                                                }
+                                                </div>
                                             </div>
                                         </div>
+                                        <div class="col-5 text-center my-auto">@produit.Nom</div>
+                                        <div class="col-3 text-right my-auto">@produit.Prix &euro;</div>
+                                        <div class="col-2 text-center my-auto">
+                                            <button class="btn btn-outline-success btnAjax" id="btnAjax" data-idproduit="@produit.IdProduit"><i class=" fa fa-plus"></i></button>
+                                        </div>
                                     </div>
-                                    <div class="col-5 text-center my-auto">@produit.Nom</div>
-                                    <div class="col-3 text-right my-auto">@produit.Prix &euro;</div>
-                                    <div class="col-2 text-center my-auto">
-                                        <button class="btn btn-outline-success btnAjax" id="btnAjax" data-idproduit="@produit.IdProduit"><i class=" fa fa-plus"></i></button>
-                                    </div>
-                                </div>
+                                }
                             }
-                        }
-                    </div>
+                        </div>
+                    }
                 }
-            }
 
+            </div>
         </div>
-    </div>
-</figure>
-    
+    </figure>
+
     <div class="modal fade" id="ModalPanier" tabindex="-1" role="dialog" aria-labelledby="ModalPanier" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -131,7 +135,7 @@
     @section scripts {
         <script type="text/javascript">
         $(document).ready(function () {
-            
+
         });
         function callAddProduit(data) {
             // permet de preparer le JSON.stringify

@@ -51,23 +51,13 @@
             </ul>
         </div>
     </nav>
-    <!-- Full Page Image Header with Vertically Centered Content -->
-    <header class="masthead">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 text-center pt-5 mt-5">
-                    <h1 class="text-light">Vos plats préférés, livrés directement à l'AFPA </h1>
-                    <h4 class="text-light">Bon Afpétit !!! </h4>
-                </div>
-            </div>
-        </div>
-    </header>
+    
     <div id="ModalLogin" class="modal fade bs-example-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-width="760">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Se connecter</h3>
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>                    
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
                 </div>
                 @using (Html.BeginForm("Connexion", "Utilisateurs", FormMethod.Post))
                 {
@@ -81,7 +71,7 @@
                             <div class="form-group">
                                 <label for="Password">Password</label>
                                 @Html.TextBox("Password", null, new { @class = "form-control" })
-                            </div>                            
+                            </div>
                             <button id="btnConnexion" class="btn btn-primary">Connection</button>
                         </div>
                     </div>
@@ -91,6 +81,7 @@
 
         </div>
     </div>
+    @RenderSection("entete", required: false)
     <div class="container body-content">
 
         @RenderBody()
@@ -201,7 +192,7 @@
                     datatype: 'JSON',
                     // En cas de succes de l'appel alors
                     success: function (data) {
-                        
+
                     },
                     error: function () {
                         // En cas d'erreur on affiche une fenetre d'alerte

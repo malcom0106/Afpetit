@@ -131,22 +131,7 @@
     @section scripts {
         <script type="text/javascript">
         $(document).ready(function () {
-            $("#voirplus").click(function () {
-                if ($("#description").attr("class") == '') {
-                    $("#description").attr("class", "flex-child");
-                    $("#voirplus").html("Voir plus ...");
-                } else {
-                    $("#description").attr("class", "");
-                    $("#voirplus").html("Réduire");
-                }
-
-            });
-            $(".btnAjax").click(function () {
-                let variable = { 'p': $(this).data("idproduit"), 's': '@Afpetit.Utilities.Cryptage.Encrypt(Convert.ToString(Session.SessionID))' };
-                callAddProduit(variable);
-                let variable2 = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Convert.ToString(Session.SessionID))' };
-                callUpdatePanier(variable2);
-            });
+            
         });
         function callAddProduit(data) {
             // permet de preparer le JSON.stringify

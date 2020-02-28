@@ -67,7 +67,7 @@
                             foreach (Afpetit.Models.Produit produit in Model.Produits)
                             {
                                 <div class="row border border-light rounded">
-                                    <div class="col-3 text-center">
+                                    <div class="col-2 text-center">
                                         <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
                                             <div class="carousel-inner">
                                                 @{
@@ -92,9 +92,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-4 text-center">@produit.Nom</div>
-                                    <div class="col-3 text-right">@produit.Prix &euro;</div>
-                                    <div class="col-2 text-center">
+                                    <div class="col-5 text-center my-auto">@produit.Nom</div>
+                                    <div class="col-3 text-right my-auto">@produit.Prix &euro;</div>
+                                    <div class="col-2 text-center my-auto">
                                         <button class="btn btn-outline-success btnAjax" id="btnAjax" data-idproduit="@produit.IdProduit"><i class=" fa fa-plus"></i></button>
                                     </div>
                                 </div>

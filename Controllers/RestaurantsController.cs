@@ -66,14 +66,18 @@ namespace Afpetit.Controllers
         }
 
         // GET: Restaurants
-        public ActionResult Index(int? IdTypeCuisine)
+        public ActionResult Index(int? IdTypeCuisine, int? IdRestaurant)
         {
             List<Restaurant> restaurants = db.Restaurants.Include(r => r.TypeCuisine).ToList();
 
             if (IdTypeCuisine != null)
             {
                 restaurants = restaurants.Where(r => r.IdTypeCuisine == IdTypeCuisine).ToList();
-            }           
+            }
+            if (IdRestaurant != null)
+            {
+                restaurants = restaurants.Where(r => r.IdRestaurant == IdRestaurant).ToList();
+            }
             return View(restaurants);
         }
 

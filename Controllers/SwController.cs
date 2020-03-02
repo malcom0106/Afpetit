@@ -58,6 +58,12 @@ namespace Afpetit.Controllers
             return Json(produitPaniers.Count, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetRestaurants(string search)
+        {
+            var restaurants = (from r in db.Restaurants.Where(r => r.Nom.Contains(search) || r.TypeCuisine.Nom.Contains(search))                              
+                              select new { Id = r.IdRestaurant, Nom = r.Nom}).ToList();
+            return Json(restaurants, JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult GetProduits(string s)
         {

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Afpétit</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/themes/base/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
@@ -51,7 +52,7 @@
             </ul>
         </div>
     </nav>
-    
+
     <div id="ModalLogin" class="modal fade bs-example-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-width="760">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -90,12 +91,49 @@
             <p>&copy; @DateTime.Now.Year - Afpétit</p>
         </footer>
     </div>
+    <div id="error"></div>
 
-    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jquery")    
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Scripts/jquery-ui-1.12.1.js")
     @RenderSection("scripts", required: false)
+
     <script type="text/javascript">
         $(document).ready(function () {
+            /////////////////Autocomplete/////////////////////////////
+            $('#recherche').autocomplete({
+                minLength:2,   
+                delay:500,
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Sw/GetRestaurants",
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify({ 'search': request.term}),
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                var obj;
+                                return  obj = {
+                                    label: item.Nom,
+                                    value: item.Nom,
+                                    id : item.Id
+                                }; 
+                            }));
+                        },
+                        error: function (response) {
+                            $("#error").html("Error"+response.responseText);
+                        },
+                        failure: function (response) {
+                             $("#error").html("failure"+response.responseText);
+                        }
+                    });
+                },
+                select: function (event, data) {
+                    console.log(data.item);
+                    $('#IdRestaurant').val(data.item.id);
+                }
+            });
             ////////////////Detail Description Restaurant /////////////////
             $("#voirplus").click(function () {
                 if ($("#description").attr("class") == '') {

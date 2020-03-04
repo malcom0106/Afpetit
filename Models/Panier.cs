@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Afpetit.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,10 +11,11 @@ namespace Afpetit.Models
         public int IdRestaurant { get; set; }
         public int Quantite { get; private set; }
         public decimal Total { get; private set; }
-        public void CalculPanier()
+
+        private void CalculPanier()
         {
-            Total = 0;
             Quantite = 0;
+            Total = 0;
             Browse();
         }
 
@@ -23,7 +25,7 @@ namespace Afpetit.Models
             int IdMenu = itemPanier.GetIdMenu();
             bool isReturnOk = true;
 
-            if(itemPanier != null)
+            if (itemPanier != null)
             {
                 if ((itemPanier is ProduitPanier || itemPanier is ProduitComposePanier) && IdProduit > 0)
                 {
@@ -35,9 +37,12 @@ namespace Afpetit.Models
                     }
                     else
                     {
-                        this.Add(item);
+                        this.Add(itemPanier);
                     }
+
+                    CalculPanier();
                 }
+
                 else if (itemPanier is MenuPanier && IdMenu > 0)
                 {
                     ItemPanier item = this.FirstOrDefault(p => p.GetIdMenu() == IdMenu);
@@ -58,8 +63,10 @@ namespace Afpetit.Models
                 {
                     isReturnOk = false;
                 }
+
+                CalculPanier();
             }
-            
+
             else
             {
                 isReturnOk = false;
@@ -75,18 +82,20 @@ namespace Afpetit.Models
 
             if (IdProduit != null && IdProduit > 0)
             {
-                 item = this.FirstOrDefault(p => p.GetIdProduit() == IdProduit);           
+                item = this.FirstOrDefault(p => p.GetIdProduit() == IdProduit);
             }
 
             else if (IdMenu != null && IdMenu > 0)
             {
-                 item = this.FirstOrDefault(p => p.GetIdMenu() == IdMenu);
+                item = this.FirstOrDefault(p => p.GetIdMenu() == IdMenu);
             }
 
             if (item != null)
             {
                 this.Remove(item);
                 isReturnOk = true;
+
+                CalculPanier();
             }
 
             return isReturnOk;

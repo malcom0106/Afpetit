@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Afpetit", "Afpetit.csproj", "{DCD3CBDF-B89D-4FB5-9122-FC9D1765F359}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendRestaurant", "..\BackendRestaurant\BackendRestaurant.csproj", "{64299B01-A3B1-4E6E-961A-DEFC51FF62BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Administration", "..\Administration\Administration.csproj", "{2384DB92-6A8B-4F31-8A6B-026137E63171}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{DCD3CBDF-B89D-4FB5-9122-FC9D1765F359}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCD3CBDF-B89D-4FB5-9122-FC9D1765F359}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCD3CBDF-B89D-4FB5-9122-FC9D1765F359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64299B01-A3B1-4E6E-961A-DEFC51FF62BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64299B01-A3B1-4E6E-961A-DEFC51FF62BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64299B01-A3B1-4E6E-961A-DEFC51FF62BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64299B01-A3B1-4E6E-961A-DEFC51FF62BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2384DB92-6A8B-4F31-8A6B-026137E63171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2384DB92-6A8B-4F31-8A6B-026137E63171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2384DB92-6A8B-4F31-8A6B-026137E63171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2384DB92-6A8B-4F31-8A6B-026137E63171}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

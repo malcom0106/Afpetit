@@ -1,23 +1,43 @@
 ﻿@model Afpetit.Models.Menu
-
 @{
     ViewBag.Title = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="pt-6">Details</h2>
-
-<div>
-    @{
-        foreach (var categorie in Model.Categories)
-        {
-            List<SelectListItem> MesDLL = (List<SelectListItem>)ViewData["cat" + categorie.IdCategorie];
-            <div>@categorie.Nom</div>
-            @Html.DropDownList("cat"+categorie.IdCategorie,MesDLL,"Slectionner",new { @class="form-control" })
-        }
+<h2>Details</h2>
+<div id="select">
+    @foreach (var categorie in Model.Categories)
+    {
+        List<SelectListItem> data = (List<SelectListItem>)ViewData["cat" + categorie.IdCategorie];
+        <div>@categorie.Nom</div>
+        @Html.DropDownList("cat" + categorie.IdCategorie, data, "Sélectionnez", new { @class = "form-control" })
     }
+
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.IdMenu }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<button id="btnCommandeMenu">Ajouter au panier</button>
+
+@section Scripts{
+    <script type="text/javascript">
+        $('#btnCommandeMenu').click(function () {
+                var produits = [];
+                $.each($("#select").find("select"), function (X, V) {
+                    console.log($(V).val());
+                    produits.push($(V).val());
+                });
+                var data = { 'idproduits': produits, 'idmenu': '@Model.IdMenu', 'idsession': '@Session.SessionID' };
+                $.ajax({
+                    url: '@Url.Action("AddMenu", "Sw")',
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+                        alert("YES");
+                    },
+                    error: function () {
+                        alert("Erreur");
+                    }
+                });
+            });
+    </script>
+}

@@ -28,39 +28,36 @@ namespace Afpetit.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-
             Menu menu = db.Menus.Find(id);
             if (menu == null)
             {
                 return HttpNotFound();
             }
 
-            //Liste des produits du restaurant 
-            var produits = db.Produits.Where(p => p.IdRestaurant == menu.IdRestaurant).ToList();
+            var produits = db.Produits.Where(m => m.IdRestaurant == menu.IdRestaurant).ToList();
 
-            //Parcourir les categories du menu id
             foreach (var categorie in menu.Categories)
             {
+                List<Produit> produits1 = produits.Where(p => p.IdCategorie == categorie.IdCategorie).ToList();
 
-                List<Produit> ProduitsCategorie = produits.Where(p => p.IdCategorie == categorie.IdCategorie).ToList();
-                //Creation d'une DDL vide
+                // On crée les items d'un select (dropdownlist)
                 List<SelectListItem> items = new List<SelectListItem>();
-                //Pour chaque produit, on ajoute un option dans la DDL
-                foreach(Produit produit in ProduitsCategorie)
+
+                foreach (Produit produit in produits1)
                 {
                     items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
                 }
-                //On créé un viewdata pour le recuperer dans la vue
-                ViewData["cat"+ categorie.IdCategorie] = items;
+
+                ViewData["cat" + categorie.IdCategorie] = items;
             }
+
             return View(menu);
         }
 
         // GET: Menus/Create
         public ActionResult Create()
         {
-            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom");
+            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Description");
             return View();
         }
 
@@ -69,7 +66,7 @@ namespace Afpetit.Controllers
         // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "IdMenu,Nom,Prix,Statut,IdRestaurant")] Menu menu)
+        public ActionResult Create([Bind(Include = "IdMenu,IdRestaurant,Nom,Statut,Prix")] Menu menu)
         {
             if (ModelState.IsValid)
             {
@@ -78,7 +75,7 @@ namespace Afpetit.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom", menu.IdRestaurant);
+            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Description", menu.IdRestaurant);
             return View(menu);
         }
 
@@ -94,7 +91,7 @@ namespace Afpetit.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom", menu.IdRestaurant);
+            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Description", menu.IdRestaurant);
             return View(menu);
         }
 
@@ -103,7 +100,7 @@ namespace Afpetit.Controllers
         // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "IdMenu,Nom,Prix,Statut,IdRestaurant")] Menu menu)
+        public ActionResult Edit([Bind(Include = "IdMenu,IdRestaurant,Nom,Statut,Prix")] Menu menu)
         {
             if (ModelState.IsValid)
             {
@@ -111,7 +108,7 @@ namespace Afpetit.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom", menu.IdRestaurant);
+            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Description", menu.IdRestaurant);
             return View(menu);
         }
 

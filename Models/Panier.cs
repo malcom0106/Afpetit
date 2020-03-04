@@ -8,17 +8,12 @@ namespace Afpetit.Models
     public class Panier : List<ItemPanier>
     {
         public int IdRestaurant { get; set; }
-        public int Quantite { get; set; }
-        public decimal Total { get; set; }
-        public void GetQuantite()
-        {
-            Quantite = 0;
-            Browse();
-        }
-
-        public void GetTotal()
+        public int Quantite { get; private set; }
+        public decimal Total { get; private set; }
+        public void CalculPanier()
         {
             Total = 0;
+            Quantite = 0;
             Browse();
         }
 
@@ -43,7 +38,6 @@ namespace Afpetit.Models
                         this.Add(item);
                     }
                 }
-
                 else if (itemPanier is MenuPanier && IdMenu > 0)
                 {
                     ItemPanier item = this.FirstOrDefault(p => p.GetIdMenu() == IdMenu);

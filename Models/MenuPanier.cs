@@ -8,7 +8,6 @@ namespace Afpetit.Models
     public class MenuPanier : ItemPanier
     {
         public int IdMenu { get; set; }
-
         public List<ProduitPanier> produits { get; set; }
 
         public MenuPanier()

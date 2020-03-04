@@ -13,23 +13,52 @@ namespace Afpetit.Controllers
         private AfpEatEntities db = new AfpEatEntities();
 
         // GET: AddProduit
-        public JsonResult AddProduit(int p, string s)
+
+        public JsonResult AddMenu(int IdMenu, List<int> IdProduits, string s)
         {
             string session = Cryptage.Decrypt(s);
             SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(session);
-            List<ProduitPanier> produitPaniers = null;
-            bool ProduitExiste = false;
-            if (sessionUtilisateur != null)
-            {
-                if (HttpContext.Application[session] != null)
-                {
-                    produitPaniers = (List<ProduitPanier>)HttpContext.Application[session];
-                }
-                else
-                {
-                    produitPaniers = new List<ProduitPanier>();
-                }
+            Panier produitPaniers = GetPanier(session);
 
+            if (sessionUtilisateur != null)
+            {    
+                Menu menu = db.Menus.Find(IdMenu);
+
+                if (menu != null)
+                {
+                    MenuPanier menuPanier = new MenuPanier();
+                    menuPanier.IdMenu = IdMenu;
+
+                    foreach (int IdProduit in IdProduits)
+                    {
+                        ProduitPanier produitPanier = FindProduit(IdProduit);
+
+                        if (produitPanier != null)
+                        {
+                            menuPanier.produits.Add(produitPanier);
+                        }
+                    }
+                    produitPaniers.Add(menuPanier);
+                }
+                HttpContext.Application[session] = produitPaniers;
+            }
+            return Json(produitPaniers.Quantite, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Ajouter un produit au panier
+        /// </summary>
+        /// <param name="p">Id Produit</param>
+        /// <param name="s">IdSession Hashé en SHA256</param>
+        /// <returns></returns>
+        public JsonResult AddProduit(int p, string s)
+        {
+            bool IsReturnOk = true;
+            string session = Cryptage.Decrypt(s);
+            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(session);
+            Panier produitPaniers = GetPanier(session);
+            bool ProduitExiste = false;
+            if (sessionUtilisateur != null && produitPaniers != null)
+            {
                 foreach (ProduitPanier produitPanier1 in produitPaniers)
                 {
                     if (produitPanier1.IdProduit == p)
@@ -55,7 +84,13 @@ namespace Afpetit.Controllers
                 }
                 HttpContext.Application[session] = produitPaniers;
             }
-            return Json(produitPaniers.Count, JsonRequestBehavior.AllowGet);
+            var ValeurRetournee = new
+            {
+                ReturnOk = IsReturnOk,
+                Quantite = produitPaniers.Quantite,
+                Montant = produitPaniers.Total
+            };
+            return Json(ValeurRetournee, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetRestaurants(string search)
@@ -166,6 +201,39 @@ namespace Afpetit.Controllers
                 message = "Erreur de Login/Mot de Passe";
             }
             return Json(message, JsonRequestBehavior.AllowGet);            
+        }
+
+        private Panier GetPanier(string s)
+        {
+            Panier produitPaniers = null;
+            if (HttpContext.Application[s] != null)
+            {
+                produitPaniers = (Panier)HttpContext.Application[s];
+            }
+            else
+            {
+                produitPaniers = new Panier();
+                produitPaniers.IdRestaurant = 0;
+            }
+            return produitPaniers;
+        }
+        private ProduitPanier FindProduit(int IdProduit)
+        {
+            Produit produit = db.Produits.Find(IdProduit);
+            ProduitPanier produitPanier = null;
+
+            if (produit != null)
+            {
+                produitPanier = new ProduitPanier();
+                produitPanier.IdProduit = IdProduit;
+                produitPanier.Nom = produit.Nom;
+                produitPanier.Description = produit.Description;
+                produitPanier.Quantite = 1;
+                produitPanier.Prix = produit.Prix;
+                produitPanier.Photo = produit.Photos.First().Nom;
+                produitPanier.IdRestaurant = produit.IdRestaurant;
+            }
+            return produitPanier;
         }
     }
 }

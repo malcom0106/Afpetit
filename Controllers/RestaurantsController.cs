@@ -89,6 +89,7 @@ namespace Afpetit.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Restaurant restaurant = db.Restaurants.Find(id);
+            //Restaurant restaurant = db.Restaurants.Include(r => r.Produits).Include(r => r.Menus).Where(r => r.IdRestaurant == id).First();
             if (restaurant == null)
             {
                 return HttpNotFound();

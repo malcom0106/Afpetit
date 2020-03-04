@@ -156,9 +156,11 @@
     <Compile Include="Models\EtatCommande.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ItemPanier.cs" />
     <Compile Include="Models\Menu.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MenuPanier.cs" />
     <Compile Include="Models\Model1.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -177,12 +179,14 @@
     <Compile Include="Models\Operation.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Panier.cs" />
     <Compile Include="Models\Photo.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Produit.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ProduitComposePanier.cs" />
     <Compile Include="Models\ProduitPanier.cs" />
     <Compile Include="Models\Restaurant.cs">
       <DependentUpon>Model1.tt</DependentUpon>

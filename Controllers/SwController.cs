@@ -13,10 +13,11 @@ namespace Afpetit.Controllers
         private AfpEatEntities db = new AfpEatEntities();
         // GET: Sw
 
-        public JsonResult AddMenu(int IdMenu, List<int> IdProduits, string idsession)
+        public JsonResult AddMenu(int IdMenu, List<int> IdProduits, string s)
         {
-            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(Session.SessionID);
-            Panier panier = GetPanier(idsession);
+            string IdSession = Cryptage.Decrypt(s);
+            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(IdSession);
+            Panier panier = GetPanier(IdSession);
 
             if (sessionUtilisateur != null && panier != null && IdMenu > 0 && IdProduits.Count > 0)
             {
@@ -44,21 +45,22 @@ namespace Afpetit.Controllers
                     panier.Add(menuPanier);
                 }
 
-                HttpContext.Application[idsession] = panier;
+                HttpContext.Application[IdSession] = panier;
             }
 
             return Json(panier.Quantite, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult AddProduit(int IdProduit, string idsession)
+        public JsonResult AddProduit(int p, string s)
         {
-            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(Session.SessionID);
-            Panier panier = GetPanier(idsession);
+            string IdSession = Cryptage.Decrypt(s);
+            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(IdSession);
+            Panier panier = GetPanier(IdSession);
             bool isReturnOk = false;
 
-            if (sessionUtilisateur != null && panier != null && IdProduit > 0)
+            if (sessionUtilisateur != null && panier != null && p > 0)
             {
-                ProduitPanier produitPanier = FindProduit(IdProduit);
+                ProduitPanier produitPanier = FindProduit(p);
 
                 if (produitPanier != null)
                 {
@@ -76,7 +78,7 @@ namespace Afpetit.Controllers
                     }
                 }
 
-                HttpContext.Application[idsession] = panier;
+                HttpContext.Application[IdSession] = panier;
             }
 
             return Json(new { isReturnOk, qte = panier.Quantite, total = panier.Total }, JsonRequestBehavior.AllowGet);

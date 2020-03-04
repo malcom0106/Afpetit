@@ -144,13 +144,7 @@
                     $("#voirplus").html("Réduire");
                 }
             });
-            ////////////////Bouton ajouter de produits dans le panier via SW /////////////////
-            $(".btnAjax").click(function () {
-                let variable = { 'p': $(this).data("idproduit"), 's': '@Afpetit.Utilities.Cryptage.Encrypt(Convert.ToString(Session.SessionID))' };
-                callAddProduit(variable);
-                let variable2 = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Convert.ToString(Session.SessionID))' };
-                callUpdatePanier(variable2);
-            });
+            
             ////////////////////////////PANIER /////////////////////////////////
             // lorsque l'on passe la souris sur le btn panier
             $("#navbardrop").hover(function () {

@@ -89,7 +89,33 @@ namespace Afpetit.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Restaurant restaurant = db.Restaurants.Find(id);
-            //Restaurant restaurant = db.Restaurants.Include(r => r.Produits).Include(r => r.Menus).Where(r => r.IdRestaurant == id).First();
+
+            var produits = db.Produits.Where(m => m.IdRestaurant == id).ToList();
+
+            foreach(Menu menu in restaurant.Menus)
+            {
+                if (menu != null)
+                {
+                    Dictionary<string, List<SelectListItem>> menucategorieDLL = new Dictionary<string, List<SelectListItem>>();
+                    foreach (var categorie in menu.Categories)
+                    {
+                        List<Produit> produits1 = produits.Where(p => p.IdCategorie == categorie.IdCategorie).ToList();
+
+                        // On crée les items d'un select (dropdownlist)
+                        List<SelectListItem> items = new List<SelectListItem>();
+
+                        foreach (Produit produit in produits1)
+                        {
+                            items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
+                        }
+                        menucategorieDLL.Add("cat"+categorie.IdCategorie, items);
+
+                        ViewData["menu" + menu.IdMenu] = menucategorieDLL;
+                    }
+                }
+                
+            }
+            
             if (restaurant == null)
             {
                 return HttpNotFound();

@@ -5,45 +5,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
+<h2 class="pt-6">Details</h2>
 
 <div>
-    <h4>Menu</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nom)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Nom)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Prix)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Prix)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Statut)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Statut)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Restaurant.Nom)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Restaurant.Nom)
-        </dd>
-
-    </dl>
+    @{
+        foreach (var categorie in Model.Categories)
+        {
+            List<SelectListItem> MesDLL = (List<SelectListItem>)ViewData["cat" + categorie.IdCategorie];
+            <div>@categorie.Nom</div>
+            @Html.DropDownList("cat"+categorie.IdCategorie,MesDLL,"Slectionner",new { @class="form-control" })
+        }
+    }
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.IdMenu }) |

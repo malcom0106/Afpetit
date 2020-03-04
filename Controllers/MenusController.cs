@@ -28,10 +28,31 @@ namespace Afpetit.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+
             Menu menu = db.Menus.Find(id);
             if (menu == null)
             {
                 return HttpNotFound();
+            }
+
+            //Liste des produits du restaurant 
+            var produits = db.Produits.Where(p => p.IdRestaurant == menu.IdRestaurant).ToList();
+
+            //Parcourir les categories du menu id
+            foreach (var categorie in menu.Categories)
+            {
+
+                List<Produit> ProduitsCategorie = produits.Where(p => p.IdCategorie == categorie.IdCategorie).ToList();
+                //Creation d'une DDL vide
+                List<SelectListItem> items = new List<SelectListItem>();
+                //Pour chaque produit, on ajoute un option dans la DDL
+                foreach(Produit produit in ProduitsCategorie)
+                {
+                    items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
+                }
+                //On créé un viewdata pour le recuperer dans la vue
+                ViewData["cat"+ categorie.IdCategorie] = items;
             }
             return View(menu);
         }

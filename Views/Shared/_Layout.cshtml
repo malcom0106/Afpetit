@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Afpétit</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/themes/base/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
@@ -21,7 +22,7 @@
                         <i class="fa fa-shopping-basket mx-2"></i>
                         <span id="badgepanier" class="">0,00 Eur.</span>
                     </a>
-                    <div id="dropdown" class="dropdown-menu">
+                    <div id="dropdown" class="dropdown-menu dropdown-menu-right">
                         <span id="spandropdown"></span>
                         <div class='text-center'><button id='btncommande' class='btn btn-primary'>Commander</button></div>
                     </div>
@@ -51,23 +52,13 @@
             </ul>
         </div>
     </nav>
-    <!-- Full Page Image Header with Vertically Centered Content -->
-    <header class="masthead">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 text-center pt-5 mt-5">
-                    <h1 class="text-light">Vos plats préférés, livrés directement à l'AFPA </h1>
-                    <h4 class="text-light">Bon Afpétit !!! </h4>
-                </div>
-            </div>
-        </div>
-    </header>
+
     <div id="ModalLogin" class="modal fade bs-example-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-width="760">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Se connecter</h3>
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>                    
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
                 </div>
                 @using (Html.BeginForm("Connexion", "Utilisateurs", FormMethod.Post))
                 {
@@ -81,7 +72,7 @@
                             <div class="form-group">
                                 <label for="Password">Password</label>
                                 @Html.TextBox("Password", null, new { @class = "form-control" })
-                            </div>                            
+                            </div>
                             <button id="btnConnexion" class="btn btn-primary">Connection</button>
                         </div>
                     </div>
@@ -91,6 +82,7 @@
 
         </div>
     </div>
+    @RenderSection("entete", required: false)
     <div class="container body-content">
 
         @RenderBody()
@@ -99,12 +91,49 @@
             <p>&copy; @DateTime.Now.Year - Afpétit</p>
         </footer>
     </div>
+    <div id="error"></div>
 
-    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jquery")    
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Scripts/jquery-ui-1.12.1.js")
     @RenderSection("scripts", required: false)
+
     <script type="text/javascript">
         $(document).ready(function () {
+            /////////////////Autocomplete/////////////////////////////
+            $('#recherche').autocomplete({
+                minLength:2,   
+                delay:500,
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Sw/GetRestaurants",
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify({ 'search': request.term}),
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                var obj;
+                                return  obj = {
+                                    label: item.Nom,
+                                    value: item.Nom,
+                                    id : item.Id
+                                }; 
+                            }));
+                        },
+                        error: function (response) {
+                            $("#error").html("Error"+response.responseText);
+                        },
+                        failure: function (response) {
+                             $("#error").html("failure"+response.responseText);
+                        }
+                    });
+                },
+                select: function (event, data) {
+                    console.log(data.item);
+                    $('#IdRestaurant').val(data.item.id);
+                }
+            });
             ////////////////Detail Description Restaurant /////////////////
             $("#voirplus").click(function () {
                 if ($("#description").attr("class") == '') {
@@ -115,46 +144,11 @@
                     $("#voirplus").html("Réduire");
                 }
             });
-            ////////////////Bouton ajouter de produits dans le panier via SW /////////////////
-            $(".btnAjax").click(function () {
-                let variable = { 'p': $(this).data("idproduit"), 's': '@Afpetit.Utilities.Cryptage.Encrypt(Convert.ToString(Session.SessionID))' };
-                callAddProduit(variable);
-                let variable2 = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Convert.ToString(Session.SessionID))' };
-                callUpdatePanier(variable2);
-            });
+            
             ////////////////////////////PANIER /////////////////////////////////
             // lorsque l'on passe la souris sur le btn panier
             $("#navbardrop").hover(function () {
-                let data = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Session.SessionID)'};
-                $.ajax({
-                    //Appel en AJAX du Service Web
-                    url: '@Url.Action("GetProduits","Sw")',
-                    // Methode de connexion en GET
-                    type: 'POST',
-                    // Formatage au format JSON des data envoyées
-                    data: JSON.stringify(data),
-                    // Data que l'on souhaite envoyé
-                    contentType: 'application/json; charset=utf-8',
-                    // Type de Donnees Attendu : JSON
-                    datatype: 'JSON',
-                    // En cas de succes de l'appel alors
-                    success: function (data) {
-                        //Exploitation de notre JSON
-                        let html = "<ul>";
-                        for (i = 0; i < data.length; i++) {
-                                html += "<li class='dropdown-item'>";
-                                html += "" + data[i].Nom + " ";
-                                html += " - " + data[i].Quantite + " ";
-                                html += "</li>";
-                        }
-                        html += "</ul>";
-                        $("#spandropdown").html(html);
-                    },
-                    error: function () {
-                        // En cas d'erreur on affiche une fenetre d'alerte
-                        $("#spandropdown").html("<ul><li class='dropdown-item'>Aucun produit dans le panier</li></ul>");
-                    }
-                });
+                
                 $("#dropdown").dropdown('show');
             });
             //Masquer la DropDown dés que l'on sort de celle ci
@@ -163,13 +157,14 @@
             });
             // Redirection au clic sur le btn panier
             $("#navbardrop").click(function () {
-                alert("futur redirection ");
+                window.location.href = '@Url.Action("Panier","Home")';
             });
 
             //Clic sur le btn commander dans le panier
-            $("#btncommande").click(function () {
+            $(".btnCommander").click(function () {
                 if (@isConnected) {
                     let data = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Session.SessionID)' };
+                    console.log(data);
                     callCommandeSW(data);
                 } else {
                     $("#ModalLogin").modal('show');
@@ -201,35 +196,11 @@
                     datatype: 'JSON',
                     // En cas de succes de l'appel alors
                     success: function (data) {
-                        
+                        alert("Commande validé"+data);
                     },
                     error: function () {
                         // En cas d'erreur on affiche une fenetre d'alerte
                         alert("Error callCommande !");
-                    }
-                });
-            }
-
-            function LoginPasswordSW(data) {
-                $.ajax({
-                    //Appel en AJAX du Service Web
-                    url: '@Url.Action("ConnexionUtilisateur","Sw")',
-                    // Methode de connexion en GET
-                    type: 'POST',
-                    // Formatage au format JSON des data envoyées
-                    data: JSON.stringify(data),
-                    // Data que l'on souhaite envoyé
-                    contentType: 'application/json; charset=utf-8',
-                    // Type de Donnees Attendu : JSON
-                    datatype: 'JSON',
-                    // En cas de succes de l'appel alors
-                    success: function (data) {
-                        alert(data);
-                        $("#ModalLogin").modal('hide');
-                    },
-                    error: function () {
-                        // En cas d'erreur on affiche une fenetre d'alerte
-                        alert('Error LoginPasswordIndex');
                     }
                 });
             }

@@ -14,6 +14,9 @@ namespace Afpetit.Controllers
 {
     public class RestaurantsController : Controller
     {
+        //Page Precedente
+        //Request.UrlReferrer.ToString()
+
         private AfpEatEntities db = new AfpEatEntities();
         private Commande commande;
 
@@ -66,25 +69,58 @@ namespace Afpetit.Controllers
         }
 
         // GET: Restaurants
-        public ActionResult Index(int? IdTypeCuisine)
+        public ActionResult Index(int? IdTypeCuisine, int? IdRestaurant)
         {
+            string urls = Request.UrlReferrer.ToString();
             List<Restaurant> restaurants = db.Restaurants.Include(r => r.TypeCuisine).ToList();
 
             if (IdTypeCuisine != null)
             {
                 restaurants = restaurants.Where(r => r.IdTypeCuisine == IdTypeCuisine).ToList();
-            }           
+            }
+            if (IdRestaurant != null)
+            {
+                restaurants = restaurants.Where(r => r.IdRestaurant == IdRestaurant).ToList();
+            }
             return View(restaurants);
         }
 
         // GET: Restaurants/Details/5
         public ActionResult Details(int? id)
         {
+            
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Restaurant restaurant = db.Restaurants.Find(id);
+
+            var produits = db.Produits.Where(m => m.IdRestaurant == id).ToList();
+
+            foreach(Menu menu in restaurant.Menus)
+            {
+                if (menu != null)
+                {
+                    Dictionary<string, List<SelectListItem>> menucategorieDLL = new Dictionary<string, List<SelectListItem>>();
+                    foreach (var categorie in menu.Categories)
+                    {
+                        List<Produit> produits1 = produits.Where(p => p.IdCategorie == categorie.IdCategorie).ToList();
+
+                        // On crée les items d'un select (dropdownlist)
+                        List<SelectListItem> items = new List<SelectListItem>();
+
+                        foreach (Produit produit in produits1)
+                        {
+                            items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
+                        }
+                        menucategorieDLL.Add("cat"+categorie.IdCategorie, items);
+
+                        ViewData["menu" + menu.IdMenu] = menucategorieDLL;
+                    }
+                }
+                
+            }
+            
             if (restaurant == null)
             {
                 return HttpNotFound();

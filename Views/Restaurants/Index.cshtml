@@ -3,39 +3,49 @@
 @{
     ViewBag.Title = "Liste des restaurants";
 }
-
-<h2>Liste des restaurant</h2>
-<div class="row">
+@section entete{
+    <!-- Full Page Image Header with Vertically Centered Content -->
+    <header class="masthead">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 text-center pt-5 mt-5">
+                    <h1 class="text-light">Nos Restaurants </h1>
+                </div>
+            </div>
+        </div>
+    </header>
+}
+<form class="form-inline d-flex md-form form-sm active-purple-2 mt-2">
+    <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search" id="recherche" aria-label="Search">
+    @Html.Hidden("IdRestaurant", "")
+    <i class="fa fa-search" aria-hidden="true"></i>
+</form>
+<div class="row pt-2">
     @foreach (var item in Model)
     {
-        <div class="col-4 border rounded">
-            <figure class="">
-                <div class="col-12">
-                    @{
-                        if (item.Photos.Count > 0)
-                        {
-                            Afpetit.Models.Photo photo = item.Photos.FirstOrDefault();
-                            <img alt="@photo.Nom" role="presentation" src="@photo.Url" class="img-fluid">
-                        }
+        <div class="col-12 col-md-6 col-lg-4 border rounded">
+            <figure class="col-12">
+                <div class="">
+                    @{ 
+                        string url = item.Photos.FirstOrDefault()?.Url;
                     }
+                    <div class="imagebandeau rounded my-1" style="background-image: url(..@url);"></div>                            
                 </div>
             </figure>
             <div>
-                <div class="">@item.Nom • @item.Adresse</div>
-                <div class="">@item.Budget • @item.TypeCuisine.Nom</div>
+                <div class=""><h5>@item.Nom</h5><h6>@item.Adresse</h6></div>
+                <div class=""> @item.TypeCuisine.Nom</div>
+                <hr />
                 <div class="">
                     <div class="">
-                            <span class="">Avis</span>
-                            <div aria-hidden="true" class="">
-                                note                                
-                            </div>
-                        </div>
-                  </div>
+                        <span class="badge badge-info badge-pill"> Note des avis (un jour peut etre)</span>
+                    </div>
+                </div>
             </div>
-            <div class="text-center">
+            <div class="text-center py-3">
                 <a href="@Url.Action("Details","Restaurants",new { @Id = item.IdRestaurant })" class="btn btn-outline-success">Passer Commande</a>
             </div>
-            
+
         </div>
     }
 </div>

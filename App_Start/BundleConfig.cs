@@ -26,6 +26,9 @@ namespace Afpetit
                       "~/Content/bootstrap.css",
                       "~/Content/font-awesome.min.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(              
+              "~/Content/themes/base/jquery-ui.css"));
         }
     }
 }

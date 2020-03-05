@@ -1,10 +1,24 @@
 ﻿@model Afpetit.Models.Restaurant
 
 @{
+    int page = ViewBag.page;
     List<Afpetit.Models.Restaurant> restaurants = ViewBag.restaurants;
     List<Afpetit.Models.TypeCuisine> typeCuisines = ViewBag.typeCuisine;
 }
-
+@section entete
+    {
+    <!-- Full Page Image Header with Vertically Centered Content -->
+    <header class="masthead">
+        <div class="container h-100">
+            <div class="row h-100 align-items-md-start align-items-lg-end">
+                <div class="col-12 text-center pt-1 mt-1">
+                    <h3 class="text-light">Vos plats préférés, livrés directement à l'AFPA </h3>
+                    <h5 class="text-light">Bon Afpétit !!! </h5>
+                </div>
+            </div>
+        </div>
+    </header>
+}
 <ul class="nav nav-tabs w-100 pt-3" role="tablist">
     <li class="nav-item w-50">
         <a class="nav-link active" data-toggle="tab" href="#typeCuine" role="tab" aria-controls="typeCuine" aria-selected="true">Par Type de Cuisne</a>
@@ -13,47 +27,67 @@
         <a class="nav-link" data-toggle="tab" href="#restaurant" role="tab" aria-controls="restaurant" aria-selected="false">Par Restaurant</a>
     </li>
 </ul>
-<div class="tab-content mt-3" style="background-color : #ededed">
-    <div class="tab-pane active" id="typeCuine" role="tabpanel" aria-labelledby="typeCuine-tab" style="height:100%">
-        <ul class="list-group">
+<div class="tab-content mt-3">
+    <div class="tab-pane active h-100" id="typeCuine" role="tabpanel" aria-labelledby="typeCuine-tab">
+        <div class="row">
             @{
                 foreach (Afpetit.Models.TypeCuisine typeCuisine in typeCuisines)
                 {
                     if (typeCuisine.Restaurants.Count >= 0)
                     {
-                        <a class="rounded text-dark" href="@Url.Action("Index","Restaurants",new { @IdTypeCuisine = typeCuisine.IdTypeCuisine })">
-                            <div class="card bg-light w-100">
-                                <div class="flex-column col-12">
-                                    <h3>@typeCuisine.Nom</h3>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <a class="rounded" href="@Url.Action("Index","Restaurants",new { @IdTypeCuisine = typeCuisine.IdTypeCuisine })">
+                                <div class="card text-white">
+                                    <div class="imagebandeau rounded" style="background-image: url(..@typeCuisine.Photos.First().Url);"></div>
+                                    <div class="card-img-overlay">
+                                        <h5 class="card-title">@typeCuisine.Nom</h5>
+                                    </div>
                                 </div>
-                                <div class="imagebandeau rounded my-1" style="background-image: url(..@typeCuisine.Photos.First().Url);"></div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
+
                     }
                 }
             }
-        </ul>
+        </div>
+        @*Pagination*@
+    <div class="col-12 py-1 text-center">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index","Home",new { @page= (page-1) })" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index","Home",new { @page= (page+1) })" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
-    <div class="tab-pane" id="restaurant" role="tabpanel" aria-labelledby="restaurant-tab">
-        <ul class="list-group">
+        
+    </div>
+    <div class="tab-pane" id="restaurant" role="tabpanel" aria-labelledby="restaurant-tab">                  
+        <div class="row">
             @{
                 foreach (Afpetit.Models.Restaurant restaurant in restaurants)
                 {
-                        <a href="@Url.Action("Details","Restaurants", new { @Id = restaurant.IdRestaurant })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <div class="card bg-light w-100">
-                                <div class="flex-column col-12">
-                                    <h3>@restaurant.Nom <span class="badge badge-light text-black-50">@restaurant.CodePostal @restaurant.Ville</span> </h3>
-                                </div>
-                                <div class="imagebandeau rounded my-1" style="background-image: url(..@restaurant.Photos.First().Url);"></div>
-                                <div class="flex-column col-12">                                    
-                                    <p class="flex-child"><small>@restaurant.Description</small></p>
-                                    <span class="badge badge-info badge-pill"> Note des avis (un jour peut etre)</span>
-                                </div>
+                    <a href="@Url.Action("Details","Restaurants", new { @Id = restaurant.IdRestaurant })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border border-white">
+                        <div class="card w-100 p-1">
+                            <div class="flex-column col-12">
+                                <h3>@restaurant.Nom <span class="badge badge-light text-black-50">@restaurant.CodePostal @restaurant.Ville</span> </h3>
                             </div>
-                        </a>
+                            <div class="imagebandeau rounded my-1" style="background-image: url(..@restaurant.Photos.First().Url);"></div>
+                            <div class="flex-column col-12">
+                                <p class="flex-child"><small>@restaurant.Description</small></p>
+                                <span class="badge badge-info badge-pill"> Note des avis (un jour peut etre)</span>
+                            </div>
+                        </div>
+                    </a>
                 }
             }
-
-        </ul>
+        </div>
     </div>
 </div>

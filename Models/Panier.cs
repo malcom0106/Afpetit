@@ -104,9 +104,13 @@ namespace Afpetit.Models
         {
             foreach (ItemPanier item in this)
             {
-                Total += item.Quantite * item.Prix;
-                Quantite += item.Quantite;
-                IdRestaurant = item.IdRestaurant;
+                if(item != null)
+                {
+                    Total += item.Quantite * item.Prix;
+                    Quantite += item.Quantite;
+                    IdRestaurant = item.IdRestaurant;
+                }
+                
             }
 
         }

@@ -76,7 +76,7 @@
                                                         @Html.DropDownList("menu"+menu.IdMenu+"cat" + categorie.IdCategorie, data, "Sélectionnez", new { @class = "form-control" })
                                                     }
                                                 </div>
-                                                <div class="col-12"><button class="btn btn-outline-primary btnAjoutMenu" data-idmenu="@menu.IdMenu"></button></div>
+                                                <div class="col-12"><button class="btn btn-outline-primary btnAjoutMenu" data-idmenu="@menu.IdMenu">Ajouter</button></div>
                                             </div>
                                         </div>
 
@@ -179,7 +179,9 @@
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json',
                     success: function (data) {
-                        alert("YES");
+                        console.log("Total Commande = "+data.total+" Eur.");
+                        $("#badgepanier").html(data.total + " Eur.");
+                        $("#ModalPanier").modal('show');
                     },
                     error: function () {
                         alert("Erreur");

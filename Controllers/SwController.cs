@@ -18,6 +18,7 @@ namespace Afpetit.Controllers
             string IdSession = Cryptage.Decrypt(s);
             SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(IdSession);
             Panier panier = GetPanier(IdSession);
+            bool isReturnOk = false;
 
             if (sessionUtilisateur != null && panier != null && IdMenu > 0 && IdProduits.Count > 0)
             {
@@ -42,13 +43,14 @@ namespace Afpetit.Controllers
                         }
                     }
 
-                    panier.Add(menuPanier);
+                    panier.AddItem(menuPanier);
+                    isReturnOk = true;
                 }
 
                 HttpContext.Application[IdSession] = panier;
             }
 
-            return Json(panier.Quantite, JsonRequestBehavior.AllowGet);
+            return Json(new { isReturnOk, qte = panier.Quantite, total = panier.Total }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult AddProduit(int p, string s)

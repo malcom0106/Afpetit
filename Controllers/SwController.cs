@@ -49,8 +49,8 @@ namespace Afpetit.Controllers
 
                 HttpContext.Application[IdSession] = panier;
             }
-
-            return Json(new { isReturnOk, qte = panier.Quantite, total = panier.Total }, JsonRequestBehavior.AllowGet);
+            string jsonPanier = Newtonsoft.Json.JsonConvert.SerializeObject(panier);
+            return Json(new { isReturnOk, qte = panier.Quantite, total = panier.Total, monpanier = jsonPanier }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult AddProduit(int p, string s)
@@ -83,7 +83,9 @@ namespace Afpetit.Controllers
                 HttpContext.Application[IdSession] = panier;
             }
 
-            return Json(new { isReturnOk, qte = panier.Quantite, total = panier.Total }, JsonRequestBehavior.AllowGet);
+            string jsonPanier = Newtonsoft.Json.JsonConvert.SerializeObject(panier);
+
+            return Json(new { isReturnOk, qte = panier.Quantite, total = panier.Total, monpanier = jsonPanier }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult RemoveProduit(int IdProduit, string idsession)
@@ -126,19 +128,20 @@ namespace Afpetit.Controllers
             return Json(panier, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult SaveCommande(string idsession)
+        public JsonResult SaveCommande(string s)
         {
-            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(Session.SessionID);
+            string IdSession = Cryptage.Decrypt(s);
+            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(IdSession);
             Panier panier = null;
 
-            if (sessionUtilisateur != null && HttpContext.Application[idsession] != null)
+            if (sessionUtilisateur != null && HttpContext.Application[IdSession] != null)
             {
-                panier = (Panier)HttpContext.Application[idsession];
+                panier = (Panier)HttpContext.Application[IdSession];
             }
 
             try
             {
-                Utilisateur utilisateur = db.Utilisateurs.First(p => p.IdSession == idsession);
+                Utilisateur utilisateur = db.Utilisateurs.First(p => p.IdSession == IdSession);
 
                 if (utilisateur != null && utilisateur.Solde > 0 && panier != null && panier.Count > 0)
                 {
@@ -178,9 +181,9 @@ namespace Afpetit.Controllers
                                 foreach (ProduitPanier produitPanier in produitPaniers)
                                 {
                                     CommandeProduit commandeProduit = new CommandeProduit();
-                                    commandeProduit.IdProduit = item.GetIdProduit();
-                                    commandeProduit.Prix = item.Prix;
-                                    commandeProduit.Quantite = item.Quantite;
+                                    commandeProduit.IdProduit = produitPanier.IdProduit;
+                                    commandeProduit.Prix = 0;
+                                    commandeProduit.Quantite = 1;
                                     commandeProduit.Menus.Add(menu);
                                     //commandeProduit.Menus.FirstOrDefault().IdMenu = item.GetIdMenu();
 

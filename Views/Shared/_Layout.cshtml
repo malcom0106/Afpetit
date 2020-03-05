@@ -22,7 +22,7 @@
                         <i class="fa fa-shopping-basket mx-2"></i>
                         <span id="badgepanier" class="">0,00 Eur.</span>
                     </a>
-                    <div id="dropdown" class="dropdown-menu">
+                    <div id="dropdown" class="dropdown-menu dropdown-menu-right">
                         <span id="spandropdown"></span>
                         <div class='text-center'><button id='btncommande' class='btn btn-primary'>Commander</button></div>
                     </div>
@@ -148,36 +148,7 @@
             ////////////////////////////PANIER /////////////////////////////////
             // lorsque l'on passe la souris sur le btn panier
             $("#navbardrop").hover(function () {
-                let data = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Session.SessionID)'};
-                $.ajax({
-                    //Appel en AJAX du Service Web
-                    url: '@Url.Action("GetProduits","Sw")',
-                    // Methode de connexion en GET
-                    type: 'POST',
-                    // Formatage au format JSON des data envoyées
-                    data: JSON.stringify(data),
-                    // Data que l'on souhaite envoyé
-                    contentType: 'application/json; charset=utf-8',
-                    // Type de Donnees Attendu : JSON
-                    datatype: 'JSON',
-                    // En cas de succes de l'appel alors
-                    success: function (data) {
-                        //Exploitation de notre JSON
-                        let html = "<ul>";
-                        for (i = 0; i < data.length; i++) {
-                                html += "<li class='dropdown-item'>";
-                                html += "" + data[i].Nom + " ";
-                                html += " - " + data[i].Quantite + " ";
-                                html += "</li>";
-                        }
-                        html += "</ul>";
-                        $("#spandropdown").html(html);
-                    },
-                    error: function () {
-                        // En cas d'erreur on affiche une fenetre d'alerte
-                        $("#spandropdown").html("<ul><li class='dropdown-item'>Aucun produit dans le panier</li></ul>");
-                    }
-                });
+                
                 $("#dropdown").dropdown('show');
             });
             //Masquer la DropDown dés que l'on sort de celle ci
@@ -186,13 +157,14 @@
             });
             // Redirection au clic sur le btn panier
             $("#navbardrop").click(function () {
-                alert("futur redirection ");
+                window.location.href = '@Url.Action("Panier","Home")';
             });
 
             //Clic sur le btn commander dans le panier
-            $("#btncommande").click(function () {
+            $(".btnCommander").click(function () {
                 if (@isConnected) {
                     let data = { 's': '@Afpetit.Utilities.Cryptage.Encrypt(Session.SessionID)' };
+                    console.log(data);
                     callCommandeSW(data);
                 } else {
                     $("#ModalLogin").modal('show');
@@ -224,35 +196,11 @@
                     datatype: 'JSON',
                     // En cas de succes de l'appel alors
                     success: function (data) {
-
+                        alert("Commande validé"+data);
                     },
                     error: function () {
                         // En cas d'erreur on affiche une fenetre d'alerte
                         alert("Error callCommande !");
-                    }
-                });
-            }
-
-            function LoginPasswordSW(data) {
-                $.ajax({
-                    //Appel en AJAX du Service Web
-                    url: '@Url.Action("ConnexionUtilisateur","Sw")',
-                    // Methode de connexion en GET
-                    type: 'POST',
-                    // Formatage au format JSON des data envoyées
-                    data: JSON.stringify(data),
-                    // Data que l'on souhaite envoyé
-                    contentType: 'application/json; charset=utf-8',
-                    // Type de Donnees Attendu : JSON
-                    datatype: 'JSON',
-                    // En cas de succes de l'appel alors
-                    success: function (data) {
-                        alert(data);
-                        $("#ModalLogin").modal('hide');
-                    },
-                    error: function () {
-                        // En cas d'erreur on affiche une fenetre d'alerte
-                        alert('Error LoginPasswordIndex');
                     }
                 });
             }

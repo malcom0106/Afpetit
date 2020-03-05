@@ -39,12 +39,11 @@ namespace Afpetit.Models
                     {
                         this.Add(itemPanier);
                     }
-
-                    CalculPanier();
                 }
 
                 else if (itemPanier is MenuPanier && IdMenu > 0)
                 {
+                    //Recherche si le menu est déjà present
                     ItemPanier item = this.FirstOrDefault(p => p.GetIdMenu() == IdMenu);
 
                     if (item != null)
@@ -53,23 +52,24 @@ namespace Afpetit.Models
                     }
                     else
                     {
-                        this.Add(item);
-                    }
-
-                    this.Add(itemPanier);
+                        this.Add(itemPanier);
+                    }                    
                 }
 
                 else
                 {
                     isReturnOk = false;
                 }
-
-                CalculPanier();
             }
-
             else
             {
                 isReturnOk = false;
+            }
+
+            //On reclacule le panier si l'item a correctement ete ajouté
+            if (isReturnOk)
+            {
+                CalculPanier();
             }
 
             return isReturnOk;

@@ -14,6 +14,9 @@ namespace Afpetit.Controllers
 {
     public class RestaurantsController : Controller
     {
+        //Page Precedente
+        //Request.UrlReferrer.ToString()
+
         private AfpEatEntities db = new AfpEatEntities();
         private Commande commande;
 
@@ -68,6 +71,7 @@ namespace Afpetit.Controllers
         // GET: Restaurants
         public ActionResult Index(int? IdTypeCuisine, int? IdRestaurant)
         {
+            string urls = Request.UrlReferrer.ToString();
             List<Restaurant> restaurants = db.Restaurants.Include(r => r.TypeCuisine).ToList();
 
             if (IdTypeCuisine != null)
@@ -84,6 +88,7 @@ namespace Afpetit.Controllers
         // GET: Restaurants/Details/5
         public ActionResult Details(int? id)
         {
+            
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

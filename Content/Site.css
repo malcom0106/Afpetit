@@ -1,6 +1,6 @@
 ﻿body {
-    padding-top: -150px;
-    padding-bottom: 20px;
+    padding-top: 60px;
+    padding-bottom: 0px;
 
 }
 
@@ -25,8 +25,8 @@ textarea {
 }
 .masthead {
     height: 100vh;
-    min-height: 100px;
-    max-height: 600px;
+    min-height: 50px;
+    max-height: 300px;
     background-image: url('../Images/fond-site.jpg');
     background-size: cover;
     background-position: bottom;
@@ -70,3 +70,4 @@ textarea {
     border-bottom: 1px solid #ce93d8;
     box-shadow: 0 1px 0 0 #ce93d8;
 }
+

@@ -443,7 +443,7 @@
     <Content Include="Views\TypeCuisines\Details.cshtml" />
     <Content Include="Views\TypeCuisines\Edit.cshtml" />
     <Content Include="Views\TypeCuisines\Index.cshtml" />
-    <Content Include="Views\Restaurants\Connexion.cshtml" />
+    <Content Include="Views\Restaurants\ConnexionRestaurant.cshtml" />
     <Content Include="Views\Restaurants\IndexProduit.cshtml" />
     <Content Include="Views\Restaurants\CreateProduit.cshtml" />
     <Content Include="Views\Utilisateurs\Deconnexion.cshtml" />
@@ -454,6 +454,9 @@
     <Content Include="Views\Menus\Edit.cshtml" />
     <Content Include="Views\Menus\Index.cshtml" />
     <Content Include="Views\Home\Panier.cshtml" />
+    <Content Include="Views\Shared\_LayoutResto.cshtml" />
+    <Content Include="Views\Restaurants\DetailsRestaurant.cshtml" />
+    <Content Include="Views\Restaurants\EditRestaurant.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

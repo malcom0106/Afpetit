@@ -210,7 +210,7 @@ namespace Afpetit.Controllers
         }
 
         // GET: Restaurants/Connexion/
-        public ActionResult Connexion()
+        public ActionResult ConnexionRestaurant()
         {                  
             return View();
         }
@@ -220,7 +220,7 @@ namespace Afpetit.Controllers
         // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Connexion([Bind(Include = "Login,Password")] Restaurant restaurant)
+        public ActionResult ConnexionRestaurant([Bind(Include = "Login,Password")] Restaurant restaurant)
         {
             if (ModelState.IsValid)
             {
@@ -239,32 +239,6 @@ namespace Afpetit.Controllers
             return View();
         }
 
-        // GET: Restaurants/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Restaurant restaurant = db.Restaurants.Find(id);
-            if (restaurant == null)
-            {
-                return HttpNotFound();
-            }
-            return View(restaurant);
-        }
-
-        // POST: Restaurants/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Restaurant restaurant = db.Restaurants.Find(id);
-            db.Restaurants.Remove(restaurant);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
         // GET: Produits
         public ActionResult IndexProduit()
         {
@@ -279,6 +253,53 @@ namespace Afpetit.Controllers
                 return RedirectToAction("Index", "Home");
             }            
         }
+
+        // GET: Restaurants/DetailsRestaurant/5
+        public ActionResult DetailsRestaurant()
+        {
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                return View(restaurant);
+            }
+            else
+            {
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
+            }
+        }
+
+        // GET: Restaurants/EditRestaurant/
+        public ActionResult EditRestaurant()
+        {
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
+                return View(restaurant);
+            }
+            else
+            {
+                return RedirectToAction("Connexion", "Restaurants");
+            }
+        }
+
+        // POST: Restaurants/EditRestaurant/
+        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier. Pour 
+        // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditRestaurant([Bind(Include = "IdRestaurant,Nom,Responsable,IdTypeCuisine,Adresse,CodePostal,Ville,Mobile,Telephone,Tag,Budget,Email,Description")] Restaurant restaurant)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(restaurant).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
+            return View(restaurant);
+        }
+
 
         protected override void Dispose(bool disposing)
         {

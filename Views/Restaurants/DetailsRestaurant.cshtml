@@ -4,119 +4,36 @@
     ViewBag.Title = "DetailsRestaurant";
     Layout = "~/Views/Shared/_LayoutResto.cshtml";
 }
-
-<h2>Details</h2>
-
-<div>
-    <h4>Restaurant</h4>
+<div class="pt-2 mt-2">
+    <h4>@Html.DisplayFor(model => model.Nom)</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nom)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Nom)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Responsable)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Responsable)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Adresse)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Adresse)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CodePostal)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CodePostal)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Ville)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Ville)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Mobile)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Mobile)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Telephone)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Telephone)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Login)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Login)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Tag)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Tag)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Budget)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Budget)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
+    <div>
+        <div class="col-12 row" id="coordonnees">
+            <div class="col-6 row" id="adresse">
+                <div class="pr-3"><i class="fa  fa-map-marker" aria-hidden="true"></i></div>
+                <div>
+                    <p><strong>Adresse : </strong></p>
+                    @Html.DisplayFor(model => model.Adresse) </br>
+                    @Html.DisplayFor(model => model.CodePostal) @Html.DisplayFor(model => model.Ville)
+                </div>
+            </div>
+            <div class="col-6 row" id="telephone">
+                <div class="pr-3"><i class="fa fa-volume-control-phone" aria-hidden="true"></i></div>
+                <div>
+                    <p><strong>Telephone : </strong></p>
+                    <p>
+                        @Html.DisplayFor(model => model.Mobile) </br>
+                        @Html.DisplayFor(model => model.Telephone)
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" id="description">
+            <strong>@Html.DisplayNameFor(model => model.Description) : </strong></br>
             @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
+        </div>
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.IdRestaurant }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+<hr />
+<div>@Html.ActionLink("Edit", "Edit", new { id = Model.IdRestaurant }, new { @class="btn btn-success col-12" })</div>
+    

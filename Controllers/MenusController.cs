@@ -64,6 +64,36 @@ namespace Afpetit.Controllers
             return View(menu);
         }
 
+        // GET: Statut du Menu
+        public ActionResult Statut(int? id)
+        {
+            if (Session["restaurant"] != null)
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Menu menu = db.Menus.Find(id);
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                if (menu == null)
+                {
+                    return HttpNotFound();
+                }
+                else
+                {
+                    menu.Statut = !menu.Statut;
+                    db.SaveChanges();
+                    return RedirectToAction("Index", "Menus");
+                }
+            }
+            else
+            {
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
+            }
+        }
+
         // GET: Menus/Create
         public ActionResult Create()
         {
@@ -140,7 +170,7 @@ namespace Afpetit.Controllers
                 ViewBag.Restaurant = (Restaurant)Session["restaurant"];
                 menu.Categories.Add(categorie);
                 db.SaveChanges();
-
+                ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
                 return View(menu);
             }
             else

@@ -5,19 +5,28 @@
     Layout = "~/Views/Shared/_LayoutResto.cshtml";
 }
 
-<h2 class="mt-2">Mes Produits</h2>
+<h2 class="mt-2">Mes Menus</h2>
 
 @foreach (var item in Model)
 {
-    <div class="row col-12 align-items-center py-2">
-        <div class="col-2">
-            
-        </div>
-        <div class="col-6">
+    <div class="row col-12 align-items-center my-1 py-1 border rounded">
+        <div class="col-4">
             <div class="col-12">
                 <strong>@Html.DisplayFor(modelItem => item.Nom)</strong>
             </div>
 
+        </div>
+        <div class="col-4">
+            @if(item.Categories != null)
+            {
+            <ul>
+                @foreach (Afpetit.Models.Categorie categorie in item.Categories)
+                {
+                    <li>@categorie.Nom</li>
+                }
+            </ul>
+                
+            }
         </div>
         <div class="col-2">
             <div class="col-12">
@@ -28,11 +37,11 @@
             <div class="col-6">
                 @if (item.Statut)
                 {
-                    <a href="@Url.Action("Statut","Produits", new { @id=item.IdMenu })"><i class="fa fa-check" aria-hidden="true" style="color:lightgreen"></i></a>
+                    <a href="@Url.Action("Statut","Menus", new { @id=item.IdMenu })"><i class="fa fa-check" aria-hidden="true" style="color:lightgreen"></i></a>
                 }
                 else
                 {
-                    <a href="@Url.Action("Statut","Produits", new { @id=item.IdMenu })"><i class="fa fa-close" aria-hidden="true" style="color:red"></i></a>
+                    <a href="@Url.Action("Statut","Menus", new { @id=item.IdMenu })"><i class="fa fa-close" aria-hidden="true" style="color:red"></i></a>
                 }
             </div>
             <div class="row col-6">

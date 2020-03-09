@@ -1,0 +1,43 @@
+﻿@model Afpetit.Models.Menu
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_LayoutResto.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal pt-3">
+    <h4>Contenu de mon Menu</h4>
+    @{
+        if (Model.Categories != null)
+        {
+            <ul>
+                @foreach (Afpetit.Models.Categorie categorie in Model.Categories)
+                {
+                    <li>@categorie.Nom</li>
+                }
+            </ul>
+        }
+    }
+    <hr />
+    <div class="form-group">
+        @Html.Label("Catégories : ", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("IdCategorie", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+    @Html.Hidden("idmenu",Model.IdMenu)
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Ajouter" class="btn btn-outline-success" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

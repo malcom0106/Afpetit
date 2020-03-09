@@ -1,0 +1,68 @@
+﻿@model Afpetit.Models.Restaurant
+
+@{
+    ViewBag.Title = "IndexRestaurant";
+    Layout = "~/Views/Shared/_LayoutResto.cshtml";
+}
+
+<div id="detail_restaurant1" class="card bg-light w-100">
+    <div class="imagebandeaudetail my-1 card-img-top" style="background-image: url(../..@Model.Photos.First().Url);"></div>
+</div>
+
+<div class="row mt-3 p-3" style="background-color:#f8f8f8">
+    <div class="col-md-3 fadeInLeft">
+        <div class="section-title">
+            <h2 class="head-title">Mon Compte Client</h2>
+            <hr class="botm-line">
+            <p class="sec-para"></p>
+        </div>
+    </div>
+    <div class="col-md-9 row">
+        <div class="col-12 col-md-6 fadeInRight">
+
+            <div class="icon">
+                <i class="fa fa-shopping-basket"></i>
+            </div>
+            <div class="icon-text">
+                <a href="@Url.Action("IndexRestaurant","Commandes")">
+                    <h3 class="txt-tl">Mes Commandes</h3>
+                </a>
+                <p class="txt-para">Voir mes commandes, Statut de mes commandes, Etat des paiements</p>
+            </div>
+
+        </div>
+        <div class="col-12 col-md-6 fadeInRight">
+            <div class="icon">
+                <i class="fa fa-product-hunt"></i>
+            </div>
+            <div class="icon-text">
+                <a href="@Url.Action("Index","Produits")">
+                    <h3 class="txt-tl">Mes Produits</h3>
+                </a>
+                <p class="txt-para">Ajouter, modifier, supprimer un produit</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 fadeInRight">
+            <div class="icon">
+                <i class="fa fa-bars"></i>
+            </div>
+            <div class="icon-text">
+                <a href="@Url.Action("Index","Menus")">
+                    <h3 class="txt-tl">Mes Menus</h3>
+                </a>
+                <p class="txt-para">Ajouter, modifier, supprimer un menu</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 fadeInRight">
+            <div class="icon">
+                <i class="fa fa-address-book-o"></i>
+            </div>
+            <div class="icon-text">
+                <a href="@Url.Action("DetailsRestaurant","Restaurants")">
+                    <h3 class="txt-tl">Mes Coordonnées</h3>
+                </a>
+                <p class="txt-para">Mise à jour des coordonnées, Changer le Mot e passe</p>
+            </div>
+        </div>
+    </div>
+</div>

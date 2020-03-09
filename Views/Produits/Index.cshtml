@@ -5,66 +5,45 @@
     Layout = "~/Views/Shared/_LayoutResto.cshtml";
 }
 
-<h2>Index</h2>
+<h2 class="mt-2">Mes Menus</h2>
 
-<p>
-    @Html.ActionLink("Nouveau", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Nom)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Prix)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayName("Prod Journaliere")
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Statut)
-        </th>
-        <th>
-            @Html.DisplayName("Catégorie")
-        </th>
-        <th></th>
-    </tr>
+@foreach (var item in Model)
+{
+    <div class="row col-12 align-items-center py-2">
+        <div class="col-2">
+            <img class="img-fluid" src="@item.Photos.FirstOrDefault().Url" />
+        </div>
+        <div class="col-6">
+            <div class="col-12">
+                <strong>@Html.DisplayFor(modelItem => item.Nom)</strong> - @Html.DisplayFor(modelItem => item.Categorie.Nom)
+            </div>
+            <div class="col-12">
+                @Html.DisplayFor(modelItem => item.Description)
+            </div>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Nom)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Prix)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Quantite)
-        </td>
-        <td>
-            @if (item.Statut)
-            {
-                <a href="@Url.Action("Statut","Produits", new { @id=item.IdProduit })"><i class="fa fa-check" aria-hidden="true" style="color:lightgreen"></i></a>
-            }
-            else
-            {
-                <a href="@Url.Action("Statut","Produits", new { @id=item.IdProduit })"><i class="fa fa-close" aria-hidden="true"style="color:red"></i></a>
-            }
-
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Categorie.Nom)
-        </td>
-        <td>
-            @Html.ActionLink("Details", "Details", new { id=item.IdProduit })
-        </td>
-    </tr>
+        </div>
+        <div class="col-2">
+            <div class="col-12">
+                Prix : <strong>@Html.DisplayFor(modelItem => item.Prix)</strong> €
+            </div>
+            <div class="col-12">
+                Dispo. : <strong>@Html.DisplayFor(modelItem => item.Quantite)</strong>
+            </div>
+        </div>
+        <div class="col-2 row">
+            <div class="col-6">
+                @if (item.Statut)
+                {
+                    <a href="@Url.Action("Statut","Produits", new { @id=item.IdProduit })"><i class="fa fa-check" aria-hidden="true" style="color:lightgreen"></i></a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Statut","Produits", new { @id=item.IdProduit })"><i class="fa fa-close" aria-hidden="true" style="color:red"></i></a>
+                }
+            </div>
+            <div class="row col-6">
+                @Html.ActionLink("Details", "Details", new { id = item.IdProduit }, new { @class = "btn btn-success" })
+            </div>
+        </div>
+    </div>
 }
-
-</table>

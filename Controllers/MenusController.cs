@@ -17,8 +17,18 @@ namespace Afpetit.Controllers
         // GET: Menus
         public ActionResult Index()
         {
-            var menus = db.Menus.Include(m => m.Restaurant);
-            return View(menus.ToList());
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                var menus = db.Menus.Include(m => m.Restaurant);
+                return View(menus.ToList());
+            }
+            else
+            {
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
+            }
+            
         }
 
         // GET: Menus/Details/5
@@ -57,8 +67,16 @@ namespace Afpetit.Controllers
         // GET: Menus/Create
         public ActionResult Create()
         {
-            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Description");
-            return View();
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
+            }
         }
 
         // POST: Menus/Create
@@ -72,11 +90,64 @@ namespace Afpetit.Controllers
             {
                 db.Menus.Add(menu);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("AddCategorie", new { @idmenu = menu.IdMenu });
             }
 
             ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Description", menu.IdRestaurant);
             return View(menu);
+        }
+
+        // GET: Menus/Edit/5
+        public ActionResult AddCategorie(int? idmenu)
+        {
+            if (idmenu == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (Session["restaurant"] != null)
+            {
+                Menu menu = db.Menus.Find(idmenu);
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+
+                ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
+                return View(menu);
+            }
+            else
+            {
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
+            }
+
+        }
+        // POST: Menus/Edit/5
+        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier. Pour 
+        // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddCategorie(int? idmenu, int? idcategorie)
+        {
+            if (idmenu == null || idcategorie ==null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (Session["restaurant"] != null)
+            {
+                Menu menu = db.Menus.Find(idmenu);
+                Categorie categorie = db.Categories.Find(idcategorie);
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                menu.Categories.Add(categorie);
+                db.SaveChanges();
+
+                return View(menu);
+            }
+            else
+            {
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
+            }
+
         }
 
         // GET: Menus/Edit/5

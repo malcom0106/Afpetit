@@ -209,7 +209,23 @@ namespace Afpetit.Controllers
             return View(restaurant);
         }
 
-        // GET: Restaurants/Connexion/
+
+        // GET: Produits
+        public ActionResult IndexProduit()
+        {
+            if (Session["Restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                var produits = db.Produits.Include(p => p.Categorie).Include(p => p.Restaurant).Where(p => p.IdRestaurant == restaurant.IdRestaurant);
+                return View(produits.ToList());
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        // GET: Restaurants/ConnexionRestaurant/
         public ActionResult ConnexionRestaurant()
         {
             if (Session["Restaurant"] != null)
@@ -222,16 +238,14 @@ namespace Afpetit.Controllers
             }
         }
 
-        // GET: Restaurants/Deconnexion/
+        // GET: Restaurants/DeconnexionRestaurant/
         public ActionResult DeconnexionRestaurant()
         {
             Session.Remove("Restaurant");
             return RedirectToAction("ConnexionRestaurant", "Restaurants");
         }
 
-        // POST: Restaurants/Connexion/
-        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier. Pour 
-        // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Restaurants/ConnexionRestaurant/
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ConnexionRestaurant([Bind(Include = "Login,Password")] Restaurant restaurant)
@@ -253,19 +267,19 @@ namespace Afpetit.Controllers
             return View();
         }
 
-        // GET: Produits
-        public ActionResult IndexProduit()
+        // GET: IndexRestaurant
+        public ActionResult IndexRestaurant()
         {
-            if(Session["Restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                var produits = db.Produits.Include(p => p.Categorie).Include(p => p.Restaurant).Where(p => p.IdRestaurant == restaurant.IdRestaurant);
-                return View(produits.ToList());
+                Restaurant restaurant1 = db.Restaurants.Find(restaurant.IdRestaurant);
+                return View(restaurant1);
             }
             else
             {
-                return RedirectToAction("Index", "Home");
-            }            
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
+            }
         }
 
         // GET: Restaurants/DetailsRestaurant/5

@@ -22,17 +22,8 @@
                         Afpetit.Models.Restaurant restaurant = (Afpetit.Models.Restaurant)Session["restaurant"];
                         if (restaurant != null)
                         {
-                            <li class="nav-item active px-1">
-                                <a class="nav-link btn btn-outline-secondary" href="@Url.Action("Index","Produits")">Mes Produits</a>
-                            </li>
-                            <li class="nav-item active px-1">
-                                <a class="nav-link btn btn-outline-secondary" href="@Url.Action("DetailsRestaurant","Restaurants")">Détail</a>
-                            </li>
-                            <li class="nav-item active px-1">
-                                <a class="nav-link btn btn-outline-secondary" href="@Url.Action("EditRestaurant","Restaurants")">Edit</a>
-                            </li>
                             <span class="navbar-text px-1">
-                                @Html.ActionLink(restaurant.Nom, "DeconnexionRestaurant", "Restaurants", null, new { @class = "nav-link" })
+                                @Html.ActionLink(restaurant.Nom, "DeconnexionRestaurant", "Restaurants", null, new { @class = "nav-link btn btn-outline-secondary" })
                             </span>
                         }
                     }

@@ -22,6 +22,7 @@ namespace Afpetit.Controllers
             if (Session["restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
                 var produits = db.Produits.Include(p => p.Categorie).Include(p => p.Restaurant).Where(p => p.IdRestaurant == restaurant.IdRestaurant);
                 return View(produits.ToList());
             }
@@ -43,7 +44,7 @@ namespace Afpetit.Controllers
 
                 Restaurant restaurant = (Restaurant)Session["restaurant"];
                 Produit produit = db.Produits.Find(id);
-
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
                 if (produit == null)
                 {
                     return HttpNotFound();
@@ -67,6 +68,7 @@ namespace Afpetit.Controllers
             if (Session["restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -90,7 +92,7 @@ namespace Afpetit.Controllers
             if (Session["restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["restaurant"];
-
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
                 ViewBag.IdRestaurant = restaurant.IdRestaurant;
                 ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
 
@@ -158,6 +160,7 @@ namespace Afpetit.Controllers
         {
             if (Session["restaurant"] != null)
             {
+                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

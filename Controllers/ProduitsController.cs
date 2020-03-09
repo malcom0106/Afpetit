@@ -31,6 +31,35 @@ namespace Afpetit.Controllers
             }
         }
 
+        // GET: Statut du produit
+        public ActionResult Statut(int? id)
+        {
+            if (Session["restaurant"] != null)
+            {                
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Produit produit = db.Produits.Find(id);
+
+                if (produit == null)
+                {
+                    return HttpNotFound();
+                }
+                else
+                {
+                    produit.Statut = !produit.Statut;
+                    db.SaveChanges();
+                    return RedirectToAction("Index", "Produits");
+                }                
+            }
+            else
+            {
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
+            }
+        }
 
         // GET: Produits/Details/5
         public ActionResult Details(int? id)

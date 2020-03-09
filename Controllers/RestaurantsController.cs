@@ -211,8 +211,22 @@ namespace Afpetit.Controllers
 
         // GET: Restaurants/Connexion/
         public ActionResult ConnexionRestaurant()
-        {                  
-            return View();
+        {
+            if (Session["Restaurant"] != null)
+            {
+                return RedirectToAction("IndexRestaurant", "Restaurants");
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        // GET: Restaurants/Deconnexion/
+        public ActionResult DeconnexionRestaurant()
+        {
+            Session.Remove("Restaurant");
+            return RedirectToAction("ConnexionRestaurant", "Restaurants");
         }
 
         // POST: Restaurants/Connexion/

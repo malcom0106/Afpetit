@@ -32,7 +32,7 @@
                                 <a class="nav-link btn btn-outline-secondary" href="@Url.Action("EditRestaurant","Restaurants")">Edit</a>
                             </li>
                             <span class="navbar-text px-1">
-                                @restaurant.Nom
+                                @Html.ActionLink(restaurant.Nom, "DeconnexionRestaurant", "Restaurants", null, new { @class = "nav-link" })
                             </span>
                         }
                     }

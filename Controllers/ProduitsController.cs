@@ -19,32 +19,58 @@ namespace Afpetit.Controllers
         // GET: Produits
         public ActionResult Index()
         {
-            var produits = db.Produits.Include(p => p.Categorie).Include(p => p.Restaurant);
-            return View(produits.ToList());
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                var produits = db.Produits.Include(p => p.Categorie).Include(p => p.Restaurant).Where(p => p.IdRestaurant == restaurant.IdRestaurant);
+                return View(produits.ToList());
+            }
+            else
+            {
+                return RedirectToAction("Connexion", "Restaurants");
+            }
         }
 
 
         // GET: Produits/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            if (Session["restaurant"] != null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Produit produit = db.Produits.Find(id);
+                if (produit == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(produit);
             }
-            Produit produit = db.Produits.Find(id);
-            if (produit == null)
+            else
             {
-                return HttpNotFound();
+                return RedirectToAction("Connexion", "Restaurants");
             }
-            return View(produit);
         }
 
         // GET: Produits/Create
         public ActionResult Create()
         {
-            ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
-            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom");
-            return View();
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+
+                ViewBag.IdRestaurant = restaurant.IdRestaurant;
+                ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
+
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Connexion", "Restaurants");
+            }
         }
 
         // POST: Produits/Create
@@ -56,7 +82,7 @@ namespace Afpetit.Controllers
             {
                 try
                 {
-                    foreach(HttpPostedFileBase file in files)
+                    foreach (HttpPostedFileBase file in files)
                     {
                         if (file.ContentLength > 0 && file.ContentLength < 2500000)
                         {
@@ -66,12 +92,13 @@ namespace Afpetit.Controllers
                                 var pathBDD = "/Images/Upload/" + fileName;
                                 var path = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
                                 file.SaveAs(path);
-                                Afpetit.Models.Photo photo = new Photo
+                                Photo photo = new Photo
                                 {
                                     Nom = fileName,
                                     Statut = true,
                                     Url = pathBDD
                                 };
+                                produit.Statut = true;
                                 produit.Photos.Add(photo);
                             }
                         }
@@ -80,33 +107,45 @@ namespace Afpetit.Controllers
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
+                    Restaurant monRestaurant = (Restaurant)Session["restaurant"];
+
+                    ViewBag.IdRestaurant = monRestaurant.IdRestaurant;
+                    ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
                     ViewBag.Erreur = ex.Message;
                     return View(produit);
-                }                
+                }
             }
+            Restaurant restaurant = (Restaurant)Session["restaurant"];
 
-            ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom", produit.IdCategorie);
-            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom", produit.IdRestaurant);
+            ViewBag.IdRestaurant = restaurant.IdRestaurant;
+            ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
             return View(produit);
         }
 
         // GET: Produits/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            if (Session["restaurant"] != null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Produit produit = db.Produits.Find(id);
+                if (produit == null)
+                {
+                    return HttpNotFound();
+                }
+                ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom", produit.IdCategorie);
+                ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom", produit.IdRestaurant);
+                return View(produit);
             }
-            Produit produit = db.Produits.Find(id);
-            if (produit == null)
+            else
             {
-                return HttpNotFound();
+                return RedirectToAction("Connexion", "Restaurants");
             }
-            ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom", produit.IdCategorie);
-            ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom", produit.IdRestaurant);
-            return View(produit);
         }
 
         // POST: Produits/Edit/5
@@ -125,32 +164,6 @@ namespace Afpetit.Controllers
             ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom", produit.IdCategorie);
             ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom", produit.IdRestaurant);
             return View(produit);
-        }
-
-        // GET: Produits/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Produit produit = db.Produits.Find(id);
-            if (produit == null)
-            {
-                return HttpNotFound();
-            }
-            return View(produit);
-        }
-
-        // POST: Produits/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Produit produit = db.Produits.Find(id);
-            db.Produits.Remove(produit);
-            db.SaveChanges();
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

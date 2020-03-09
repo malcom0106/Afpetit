@@ -27,7 +27,7 @@ namespace Afpetit.Controllers
             }
             else
             {
-                return RedirectToAction("Connexion", "Restaurants");
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
             }
         }
 
@@ -51,7 +51,7 @@ namespace Afpetit.Controllers
             }
             else
             {
-                return RedirectToAction("Connexion", "Restaurants");
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
             }
         }
 
@@ -69,7 +69,7 @@ namespace Afpetit.Controllers
             }
             else
             {
-                return RedirectToAction("Connexion", "Restaurants");
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
             }
         }
 
@@ -144,7 +144,7 @@ namespace Afpetit.Controllers
             }
             else
             {
-                return RedirectToAction("Connexion", "Restaurants");
+                return RedirectToAction("ConnexionRestaurant", "Restaurants");
             }
         }
 

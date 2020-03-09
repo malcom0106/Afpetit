@@ -71,7 +71,7 @@ namespace Afpetit.Controllers
         // GET: Restaurants
         public ActionResult Index(int? IdTypeCuisine, int? IdRestaurant)
         {
-            string urls = Request.UrlReferrer.ToString();
+            //string urls = Request.UrlReferrer.ToString();
             List<Restaurant> restaurants = db.Restaurants.Include(r => r.TypeCuisine).ToList();
 
             if (IdTypeCuisine != null)
@@ -228,7 +228,7 @@ namespace Afpetit.Controllers
                 if (monRestaurant != null)
                 {
                     Session["Restaurant"] = monRestaurant;
-                    return RedirectToAction("Index", "Restaurants");
+                    return RedirectToAction("IndexRestaurant", "Restaurants");
                 }
                 else
                 {

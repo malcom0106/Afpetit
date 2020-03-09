@@ -2,12 +2,13 @@
 
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutResto.cshtml";
 }
 
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Nouveau", "Create")
 </p>
 <table class="table">
     <tr>
@@ -21,16 +22,13 @@
             @Html.DisplayNameFor(model => model.Description)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Quantite)
+            @Html.DisplayName("Prod Journaliere")
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Statut)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Categorie.Nom)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Restaurant.Nom)
+            @Html.DisplayName("Catégorie")
         </th>
         <th></th>
     </tr>
@@ -56,12 +54,7 @@
             @Html.DisplayFor(modelItem => item.Categorie.Nom)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Restaurant.Nom)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.IdProduit }) |
-            @Html.ActionLink("Details", "Details", new { id=item.IdProduit }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.IdProduit })
+            @Html.ActionLink("Details", "Details", new { id=item.IdProduit })
         </td>
     </tr>
 }

@@ -10,7 +10,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-        <a class="navbar-brand" href="@Url.Action("Index","Home")">Bon Afpétit ! Administration Restaurant</a>
+        <a class="navbar-brand" href="@Url.Action("ConnexionRestaurant","Restaurants")">Bon Afpétit ! Administration Restaurant</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarRight" aria-controls="navbarRight" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -19,17 +19,17 @@
                 @{
                     if (Session["restaurant"] != null)
                     {
-                        Afpetit_Back_Resto.Models.Restaurant restaurant = (Afpetit_Back_Resto.Models.Restaurant)Session["restaurant"];
+                        Afpetit.Models.Restaurant restaurant = (Afpetit.Models.Restaurant)Session["restaurant"];
                         if (restaurant != null)
                         {
                             <li class="nav-item active px-1">
                                 <a class="nav-link btn btn-outline-secondary" href="@Url.Action("Index","Produits")">Mes Produits</a>
                             </li>
                             <li class="nav-item active px-1">
-                                <a class="nav-link btn btn-outline-secondary" href="@Url.Action("Details","Restaurants")">Détail</a>
+                                <a class="nav-link btn btn-outline-secondary" href="@Url.Action("DetailsRestaurant","Restaurants")">Détail</a>
                             </li>
                             <li class="nav-item active px-1">
-                                <a class="nav-link btn btn-outline-secondary" href="@Url.Action("Edit","Restaurants")">Edit</a>
+                                <a class="nav-link btn btn-outline-secondary" href="@Url.Action("EditRestaurant","Restaurants")">Edit</a>
                             </li>
                             <span class="navbar-text px-1">
                                 @restaurant.Nom
@@ -39,7 +39,7 @@
                     else
                     {
                         <li class="nav-item">
-                            @Html.ActionLink("Connexion", "Connexion", "Restaurants", null, new { @class = "nav-link" })
+                            @Html.ActionLink("Connexion", "ConnexionRestaurant", "Restaurants", null, new { @class = "nav-link" })
                         </li>
                     }
                 }

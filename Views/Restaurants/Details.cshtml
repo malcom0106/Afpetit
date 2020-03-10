@@ -74,37 +74,37 @@
                                     @{
                                         foreach (Afpetit.Models.Menu menu in Model.Menus)
                                         {
-                                            <div class="card">
-                                                <div class="card-header" id="headingOne">
-                                                    <h5 class="mb-0">
-                                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse_m_@menu.IdMenu" aria-expanded="true" aria-controls="collapse_m_@menu.IdMenu">
-                                                            @menu.Nom
-                                                        </button>
-                                                    </h5>
-                                                </div>
-
-                                                <div id="collapse_m_@menu.IdMenu" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordion">
-                                                    <div class="row align-items-center">
-                                                        <div class="card-body col-9">
-                                                            @foreach (Afpetit.Models.Categorie categorie in menu.Categories)
-                                                             {
-                                                                Dictionary<string, List<SelectListItem>> MesDLL = (Dictionary<string, List<SelectListItem>>)ViewData["menu" + menu.IdMenu];
-
-                                                                List<SelectListItem> data = (List<SelectListItem>)MesDLL["cat" + categorie.IdCategorie];
-                                                                <div class="pl-3">
-                                                                    <h6 class="pl-1">@categorie.Nom :</h6>
-                                                                    @Html.DropDownList("menu" + menu.IdMenu + "cat" + categorie.IdCategorie, data, "Sélectionnez", new { @class = "form-control col-12 pl-2" })
-                                                                </div>
-                                                             }
-                                                        </div>
-                                                        <div class="col-3 text-center"><button class="btn btn-outline-success btnAjoutMenu" data-idmenu="@menu.IdMenu"><i class=" fa fa-plus"></i></button></div>
+                                            if (menu.Statut)
+                                            {
+                                                <div class="card">
+                                                    <div class="card-header" id="headingOne">
+                                                        <h5 class="mb-0">
+                                                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapse_m_@menu.IdMenu" aria-expanded="true" aria-controls="collapse_m_@menu.IdMenu">
+                                                                @menu.Nom
+                                                            </button>
+                                                        </h5>
                                                     </div>
 
+                                                    <div id="collapse_m_@menu.IdMenu" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordion">
+                                                        <div class="row align-items-center">
+                                                            <div class="card-body col-9">
+                                                                @foreach (Afpetit.Models.Categorie categorie in menu.Categories)
+                                                                {
+                                                                    Dictionary<string, List<SelectListItem>> MesDLL = (Dictionary<string, List<SelectListItem>>)ViewData["menu" + menu.IdMenu];
+
+                                                                    List<SelectListItem> data = (List<SelectListItem>)MesDLL["cat" + categorie.IdCategorie];
+                                                                    <div class="pl-3">
+                                                                        <h6 class="pl-1">@categorie.Nom :</h6>
+                                                                        @Html.DropDownList("menu" + menu.IdMenu + "cat" + categorie.IdCategorie, data, "Sélectionnez", new { @class = "form-control col-12 pl-2" })
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            <div class="col-3 text-center"><button class="btn btn-outline-success btnAjoutMenu" data-idmenu="@menu.IdMenu"><i class=" fa fa-plus"></i></button></div>
+                                                        </div>
+
+                                                    </div>
                                                 </div>
-                                            </div>
-
-
-
+                                            }
                                         }
                                     }
                                 </div>
@@ -156,7 +156,6 @@
                             </div>
                         }
                     }
-
                 </div>
             </div>
         </figure>

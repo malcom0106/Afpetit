@@ -17,10 +17,18 @@ namespace Afpetit.Controllers
         // GET: Home
         public ActionResult Index(int? page)
         {
-            if(page == null || page == 1)
+            decimal cuisine = db.TypeCuisines.Where(t => t.Statut).Count();
+            decimal NombrePageMax = Math.Ceiling(cuisine / Convert.ToDecimal(Constante.vignetteAccueil));
+            if (page == null || page <= 1)
             {
                 ViewBag.page = 1;
                 ViewBag.typeCuisine = db.TypeCuisines.Where(t=>t.Statut).Take(Constante.vignetteAccueil).OrderBy(t => t.Nom).ToList();
+            }
+            else if(page >= NombrePageMax)
+            {
+                ViewBag.page = (int)NombrePageMax;
+                int saut = ((int)NombrePageMax - 1) * Constante.vignetteAccueil;
+                ViewBag.typeCuisine = db.TypeCuisines.Where(t => t.Statut).Take(Constante.vignetteAccueil).OrderBy(t => t.Nom).Skip(saut).ToList();
             }
             else
             {

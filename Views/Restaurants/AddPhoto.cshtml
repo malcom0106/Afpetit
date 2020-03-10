@@ -1,0 +1,15 @@
+﻿@model Afpetit.Models.Restaurant
+
+@{
+    ViewBag.Title = "AddPhoto";
+    Layout = "~/Views/Shared/_LayoutResto.cshtml";
+}
+
+<h2>AddPhoto</h2>
+
+@using (Html.BeginForm("AddPhoto", "Restaurants", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="file" name="file" id="file"/>
+    <button type="submit" class="btn btn-success">Ajouter</button>
+}

@@ -112,10 +112,12 @@ namespace Afpetit.Controllers
 
                         foreach (Produit produit in produits1)
                         {
-                            items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
+                            if (produit.Statut)
+                            {
+                                items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
+                            }                            
                         }
                         menucategorieDLL.Add("cat"+categorie.IdCategorie, items);
-
                         ViewData["menu" + menu.IdMenu] = menucategorieDLL;
                     }
                 }
@@ -152,7 +154,7 @@ namespace Afpetit.Controllers
                         if (Functions.IsImage(file))
                         {
                             var fileName = Path.GetFileName(file.FileName);
-                            var pathBDD = "Images/Upload/" + fileName;
+                            var pathBDD = "/Images/Upload/" + fileName;
                             var path = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
                             file.SaveAs(path);
                             Photo photo = new Photo
@@ -334,30 +336,57 @@ namespace Afpetit.Controllers
         public ActionResult DelPhoto(int? IdPhoto)
         {
             if(IdPhoto != null)
-            {                
-                db.Photos.Remove(db.Photos.Find(IdPhoto));
-                return RedirectToAction("ChangePhoto", "Restaurants");
+            {
+                if (Session["Restaurant"] != null)
+                {
+                    Restaurant sessionRestaurant = (Restaurant)Session["Restaurant"];
+                    Restaurant restaurant = db.Restaurants.Find(sessionRestaurant.IdRestaurant);
+                    Photo photo = db.Photos.Find(IdPhoto);
+                    restaurant.Photos.Remove(photo);
+                    db.SaveChanges();
+                }                
             }
             return RedirectToAction("ChangePhoto", "Restaurants");
         }
 
-        //GET: 
+        //GET: Restaurants/AddPhoto
         public ActionResult AddPhoto()
         {
-
-                return RedirectToAction("ChangePhoto", "Restaurants");
-            return RedirectToAction("ChangePhoto", "Restaurants");
+            if (Session["Restaurant"] != null)
+            {
+                return View();
+            }
+            return RedirectToAction("ConnexionRestaurant", "Restaurants");
         }
 
+        //POST: Restaurants/AddPhoto
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DelPhoto(int? IdPhoto)
+        public ActionResult AddPhoto(HttpPostedFileBase file)
         {
-            if (IdPhoto != null)
+            if(Session["Restaurant"] != null)
             {
-                db.Photos.Remove(db.Photos.Find(IdPhoto));
-                return RedirectToAction("ChangePhoto", "Restaurants");
-            }
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                Restaurant monRestaurant = db.Restaurants.Find(restaurant.IdRestaurant);
+                if (file.ContentLength > 0 && file.ContentLength < 2500000)
+                {
+                    if (Functions.IsImage(file))
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var pathBDD = "/Images/Upload/" + fileName;
+                        var path = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
+                        file.SaveAs(path);
+                        Photo photo = new Photo
+                        {
+                            Nom = fileName,
+                            Statut = true,
+                            Url = pathBDD
+                        };
+                        monRestaurant.Photos.Add(photo);
+                        db.SaveChanges();
+                    }
+                }
+            }            
             return RedirectToAction("ChangePhoto", "Restaurants");
         }
 

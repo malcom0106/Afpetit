@@ -328,6 +328,55 @@ namespace Afpetit.Controllers
             return View(restaurant);
         }
 
+        //POST: Restaurant/DelPhoto/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DelPhoto(int? IdPhoto)
+        {
+            if(IdPhoto != null)
+            {                
+                db.Photos.Remove(db.Photos.Find(IdPhoto));
+                return RedirectToAction("ChangePhoto", "Restaurants");
+            }
+            return RedirectToAction("ChangePhoto", "Restaurants");
+        }
+
+        //GET: 
+        public ActionResult AddPhoto()
+        {
+
+                return RedirectToAction("ChangePhoto", "Restaurants");
+            return RedirectToAction("ChangePhoto", "Restaurants");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DelPhoto(int? IdPhoto)
+        {
+            if (IdPhoto != null)
+            {
+                db.Photos.Remove(db.Photos.Find(IdPhoto));
+                return RedirectToAction("ChangePhoto", "Restaurants");
+            }
+            return RedirectToAction("ChangePhoto", "Restaurants");
+        }
+
+        // GET: Restaurants/ChangePhoto/
+        public ActionResult ChangePhoto()
+        {
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant monRestaurant = db.Restaurants.Find(restaurant.IdRestaurant);
+                return View(monRestaurant);
+            }
+            else
+            {
+                return RedirectToAction("Connexion", "Restaurants");
+            }
+        }
+
+
         // GET: Restaurants/ChangePassword/
         public ActionResult ChangePassword()
         {
@@ -342,6 +391,7 @@ namespace Afpetit.Controllers
             }
         }
 
+
         //POST: Restaurant/ChangePassword/
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -350,12 +400,11 @@ namespace Afpetit.Controllers
 
             if (Session["restaurant"] != null)
             {
-                string oldPassword = formCollection["Password"];
                 string newPassword1 = formCollection["NewPassword1"];
                 string newPassword2 = formCollection["NewPassword2"];
 
                 Restaurant restaurant = (Restaurant)Session["restaurant"];
-                Restaurant verificationPassword = db.Restaurants.Where(r => r.IdRestaurant == restaurant.IdRestaurant && r.Password == oldPassword).FirstOrDefault();
+                Restaurant verificationPassword = db.Restaurants.Where(r => r.IdRestaurant == restaurant.IdRestaurant).FirstOrDefault();
                 if(verificationPassword != null)
                 {
                     if (newPassword1 == newPassword2)
@@ -367,14 +416,9 @@ namespace Afpetit.Controllers
                     }
                     else
                     {
-                        ViewBag.Message = "LEs deux nouveau mot de passe sont incorrrect";
+                        ViewBag.Message = "Les deux nouveau mot de passe sont incorrrect";
                     }
-                }
-                else
-                {
-                    ViewBag.Message = "Ancien mot de passe est incorrect";
-                }
-                
+                }                
             }
             
             return RedirectToAction("Connexion", "Restaurants");

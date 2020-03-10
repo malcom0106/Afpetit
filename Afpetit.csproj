@@ -457,11 +457,15 @@
     <Content Include="Views\Restaurants\EditRestaurant.cshtml" />
     <Content Include="Views\Restaurants\IndexRestaurant.cshtml" />
     <Content Include="Views\Menus\AddCategorie.cshtml" />
+    <Content Include="Views\Restaurants\ChangePassword.cshtml" />
+    <Content Include="Views\Restaurants\ChangePhoto.cshtml" />
+    <Content Include="Views\Restaurants\AddPhoto.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Data\" />
     <Folder Include="Images\Upload\" />
+    <Folder Include="Views\Manage\" />
     <Folder Include="Views\Sw\" />
   </ItemGroup>
   <ItemGroup>

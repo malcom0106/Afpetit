@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Afpetit.Models;
 using Afpetit.Utilities;
@@ -99,7 +100,7 @@ namespace Afpetit.Controllers
 
             foreach(Menu menu in restaurant.Menus)
             {
-                if (menu != null)
+                if (menu != null && menu.Statut)
                 {
                     Dictionary<string, List<SelectListItem>> menucategorieDLL = new Dictionary<string, List<SelectListItem>>();
                     foreach (var categorie in menu.Categories)
@@ -111,10 +112,12 @@ namespace Afpetit.Controllers
 
                         foreach (Produit produit in produits1)
                         {
-                            items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
+                            if (produit.Statut)
+                            {
+                                items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
+                            }                            
                         }
                         menucategorieDLL.Add("cat"+categorie.IdCategorie, items);
-
                         ViewData["menu" + menu.IdMenu] = menucategorieDLL;
                     }
                 }
@@ -151,7 +154,7 @@ namespace Afpetit.Controllers
                         if (Functions.IsImage(file))
                         {
                             var fileName = Path.GetFileName(file.FileName);
-                            var pathBDD = "Images/Upload/" + fileName;
+                            var pathBDD = "/Images/Upload/" + fileName;
                             var path = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
                             file.SaveAs(path);
                             Photo photo = new Photo
@@ -225,6 +228,13 @@ namespace Afpetit.Controllers
             }
         }
 
+        // GET: Restaurants/DeconnexionRestaurant/
+        public ActionResult DeconnexionRestaurant()
+        {
+            Session.Remove("Restaurant");
+            return RedirectToAction("ConnexionRestaurant", "Restaurants");
+        }
+
         // GET: Restaurants/ConnexionRestaurant/
         public ActionResult ConnexionRestaurant()
         {
@@ -237,32 +247,24 @@ namespace Afpetit.Controllers
                 return View();
             }
         }
-
-        // GET: Restaurants/DeconnexionRestaurant/
-        public ActionResult DeconnexionRestaurant()
-        {
-            Session.Remove("Restaurant");
-            return RedirectToAction("ConnexionRestaurant", "Restaurants");
-        }
-
+        
         // POST: Restaurants/ConnexionRestaurant/
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ConnexionRestaurant([Bind(Include = "Login,Password")] Restaurant restaurant)
         {
             if (ModelState.IsValid)
-            {
-                Restaurant monRestaurant = db.Restaurants.Where(r => r.Login == restaurant.Login && r.Password == restaurant.Password).SingleOrDefault();
-                if (monRestaurant != null)
+            {                
+                Restaurant monRestaurant = db.Restaurants.Where(r => r.Login == restaurant.Login).SingleOrDefault();
+                bool passwordValid = Crypto.VerifyHashedPassword(monRestaurant.Password, restaurant.Password);
+                if (passwordValid)
                 {
                     Session["Restaurant"] = monRestaurant;
                     return RedirectToAction("IndexRestaurant", "Restaurants");
                 }
-                else
-                {
-                    ViewBag.message = "L'identification a échoué";
-                    return View();
-                }
+                ViewBag.message = "L'identification a échoué";
+                return View();
+
             }            
             return View();
         }
@@ -328,6 +330,129 @@ namespace Afpetit.Controllers
             return View(restaurant);
         }
 
+        //POST: Restaurant/DelPhoto/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DelPhoto(int? IdPhoto)
+        {
+            if(IdPhoto != null)
+            {
+                if (Session["Restaurant"] != null)
+                {
+                    Restaurant sessionRestaurant = (Restaurant)Session["Restaurant"];
+                    Restaurant restaurant = db.Restaurants.Find(sessionRestaurant.IdRestaurant);
+                    Photo photo = db.Photos.Find(IdPhoto);
+                    restaurant.Photos.Remove(photo);
+                    db.SaveChanges();
+                }                
+            }
+            return RedirectToAction("ChangePhoto", "Restaurants");
+        }
+
+        //GET: Restaurants/AddPhoto
+        public ActionResult AddPhoto()
+        {
+            if (Session["Restaurant"] != null)
+            {
+                return View();
+            }
+            return RedirectToAction("ConnexionRestaurant", "Restaurants");
+        }
+
+        //POST: Restaurants/AddPhoto
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddPhoto(HttpPostedFileBase file)
+        {
+            if(Session["Restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                Restaurant monRestaurant = db.Restaurants.Find(restaurant.IdRestaurant);
+                if (file.ContentLength > 0 && file.ContentLength < 2500000)
+                {
+                    if (Functions.IsImage(file))
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var pathBDD = "/Images/Upload/" + fileName;
+                        var path = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
+                        file.SaveAs(path);
+                        Photo photo = new Photo
+                        {
+                            Nom = fileName,
+                            Statut = true,
+                            Url = pathBDD
+                        };
+                        monRestaurant.Photos.Add(photo);
+                        db.SaveChanges();
+                    }
+                }
+            }            
+            return RedirectToAction("ChangePhoto", "Restaurants");
+        }
+
+        // GET: Restaurants/ChangePhoto/
+        public ActionResult ChangePhoto()
+        {
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant monRestaurant = db.Restaurants.Find(restaurant.IdRestaurant);
+                return View(monRestaurant);
+            }
+            else
+            {
+                return RedirectToAction("Connexion", "Restaurants");
+            }
+        }
+
+
+        // GET: Restaurants/ChangePassword/
+        public ActionResult ChangePassword()
+        {
+            if (Session["restaurant"] != null)
+            {
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                return View(restaurant);
+            }
+            else
+            {
+                return RedirectToAction("Connexion", "Restaurants");
+            }
+        }
+
+
+        //POST: Restaurant/ChangePassword/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(FormCollection formCollection)
+        {
+
+            if (Session["restaurant"] != null)
+            {
+                string newPassword1 = formCollection["NewPassword1"];
+                string newPassword2 = formCollection["NewPassword2"];
+
+                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant verificationPassword = db.Restaurants.Where(r => r.IdRestaurant == restaurant.IdRestaurant).FirstOrDefault();
+                if(verificationPassword != null)
+                {
+                    if (newPassword1 == newPassword2)
+                    {
+                        verificationPassword.Password = Crypto.HashPassword(newPassword2);
+                        db.SaveChanges();
+                        Session.Remove("Restaurant");
+                        return RedirectToAction("ConnexionRestaurant", "Restaurants");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Les deux nouveau mot de passe sont incorrrect";
+                    }
+                }                
+            }
+            
+            return RedirectToAction("Connexion", "Restaurants");
+
+        }
 
         protected override void Dispose(bool disposing)
         {

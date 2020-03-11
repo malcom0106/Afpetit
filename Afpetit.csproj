@@ -427,11 +427,7 @@
     <Content Include="Views\Utilisateurs\Edit.cshtml" />
     <Content Include="Views\Utilisateurs\ListeInscrits.cshtml" />
     <Content Include="Views\Utilisateurs\Connexion.cshtml" />
-    <Content Include="Views\Commandes\Create.cshtml" />
-    <Content Include="Views\Commandes\Delete.cshtml" />
     <Content Include="Views\Commandes\Details.cshtml" />
-    <Content Include="Views\Commandes\Edit.cshtml" />
-    <Content Include="Views\Commandes\Index.cshtml" />
     <Content Include="Views\Produits\Create.cshtml" />
     <Content Include="Views\Produits\Details.cshtml" />
     <Content Include="Views\Produits\Edit.cshtml" />
@@ -460,6 +456,7 @@
     <Content Include="Views\Restaurants\ChangePassword.cshtml" />
     <Content Include="Views\Restaurants\ChangePhoto.cshtml" />
     <Content Include="Views\Restaurants\AddPhoto.cshtml" />
+    <Content Include="Views\Commandes\IndexRestaurant.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

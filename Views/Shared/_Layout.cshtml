@@ -90,7 +90,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Afpétit</p>
+            <p>&copy; @DateTime.Now.Year - Bon AFPétit</p>
         </footer>
     </div>
     <div id="error"></div>
@@ -101,6 +101,8 @@
     @RenderSection("scripts", required: false)
 
     <script type="text/javascript">
+
+
         $(document).ready(function () {
             /////////////////Autocomplete/////////////////////////////
             $('#recherche').autocomplete({

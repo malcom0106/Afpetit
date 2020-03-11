@@ -23,8 +23,7 @@ namespace Afpetit.Controllers
                 var commandes = db.Commandes.Include(c => c.EtatCommande).Include(c => c.Restaurant).Include(c => c.Utilisateur).Where(c=>c.IdRestaurant == restaurant.IdRestaurant);
                 return View(commandes.ToList());
             }
-            return RedirectToAction("ConnexionRestaurant","Restaurants",null);
-            
+            return RedirectToAction("ConnexionRestaurant","Restaurants",null); 
         }
 
         // GET: Commandes/Details/5

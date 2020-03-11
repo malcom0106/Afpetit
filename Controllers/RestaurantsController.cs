@@ -65,7 +65,6 @@ namespace Afpetit.Controllers
             }
             Session["Commande"] = commande;
 
-
             return RedirectToAction("Details/"+ idRestaurant.ToString());
         }
 
@@ -120,8 +119,7 @@ namespace Afpetit.Controllers
                         menucategorieDLL.Add("cat"+categorie.IdCategorie, items);
                         ViewData["menu" + menu.IdMenu] = menucategorieDLL;
                     }
-                }
-                
+                }                
             }
             
             if (restaurant == null)

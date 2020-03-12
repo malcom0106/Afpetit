@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Afpetit.Dao;
 using Afpetit.Models;
 using Afpetit.Utilities;
 
@@ -15,16 +16,15 @@ namespace Afpetit.Controllers
     public class ProduitsController : Controller
     {
         private AfpEatEntities db = new AfpEatEntities();
-
+        private DaoProduit daoProduit = new DaoProduit();
         // GET: Produits
         public ActionResult Index()
         {
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
-                var produits = db.Produits.Include(p => p.Categorie).Include(p => p.Restaurant).Where(p => p.IdRestaurant == restaurant.IdRestaurant);
-                return View(produits.ToList());
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];                
+                return View(daoProduit.GetProduitsRestaurant(restaurant));
             }
             else
             {
@@ -35,26 +35,19 @@ namespace Afpetit.Controllers
         // GET: Statut du produit
         public ActionResult Statut(int? id)
         {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             if (Session["Restaurant"] != null)
-            {                
-                if (id == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-
-                Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                Produit produit = db.Produits.Find(id);
+            {                             
                 ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
-                if (produit == null)
+                
+                if (daoProduit.ChangeStatut((int)id))
                 {
-                    return HttpNotFound();
+                    return RedirectToAction("Index", "Produits");                   
                 }
-                else
-                {
-                    produit.Statut = !produit.Statut;
-                    db.SaveChanges();
-                    return RedirectToAction("Index", "Produits");
-                }                
+                return HttpNotFound();
             }
             else
             {
@@ -73,7 +66,7 @@ namespace Afpetit.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Produit produit = db.Produits.Find(id);
+                Produit produit = daoProduit.GetProduitById((int)id);
                 if (produit == null)
                 {
                     return HttpNotFound();
@@ -109,49 +102,25 @@ namespace Afpetit.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "IdProduit,IdRestaurant,IdCategorie,Nom,Prix,Description,Quantite,Statut")] Produit produit, HttpPostedFileBase[] files)
         {
+            Restaurant monRestaurant = (Restaurant)Session["Restaurant"];
+            ViewBag.IdRestaurant = monRestaurant.IdRestaurant;
+            ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    foreach (HttpPostedFileBase file in files)
+                    if (daoProduit.CreateProduit(produit, files))
                     {
-                        if (file.ContentLength > 0 && file.ContentLength < 2500000)
-                        {
-                            if (Functions.IsImage(file))
-                            {
-                                var fileName = Path.GetFileName(file.FileName);
-                                var pathBDD = "/Images/Upload/" + fileName;
-                                var path = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
-                                file.SaveAs(path);
-                                Photo photo = new Photo
-                                {
-                                    Nom = fileName,
-                                    Statut = true,
-                                    Url = pathBDD
-                                };
-                                produit.Statut = true;
-                                produit.Photos.Add(photo);
-                            }
-                        }
-                    }
-                    db.Produits.Add(produit);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+                        return RedirectToAction("Index");
+                    }                    
                 }
                 catch (Exception ex)
-                {
-                    Restaurant monRestaurant = (Restaurant)Session["Restaurant"];
-
-                    ViewBag.IdRestaurant = monRestaurant.IdRestaurant;
-                    ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
+                {                    
                     ViewBag.Erreur = ex.Message;
                     return View(produit);
                 }
             }
-            Restaurant restaurant = (Restaurant)Session["Restaurant"];
-
-            ViewBag.IdRestaurant = restaurant.IdRestaurant;
-            ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
             return View(produit);
         }
 
@@ -165,7 +134,7 @@ namespace Afpetit.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Produit produit = db.Produits.Find(id);
+                Produit produit = daoProduit.GetProduitById((int)id);
                 if (produit == null)
                 {
                     return HttpNotFound();
@@ -181,17 +150,16 @@ namespace Afpetit.Controllers
         }
 
         // POST: Produits/Edit/5
-        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier. Pour 
-        // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "IdProduit,IdRestaurant,IdCategorie,Nom,Prix,Description,Quantite,Statut")] Produit produit)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(produit).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (daoProduit.EditProduit(produit))
+                {
+                    return RedirectToAction("Index");
+                }                
             }
             ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom", produit.IdCategorie);
             ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Nom", produit.IdRestaurant);

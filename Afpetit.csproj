@@ -460,6 +460,7 @@
     <Content Include="Views\Restaurants\ChangePhoto.cshtml" />
     <Content Include="Views\Restaurants\AddPhoto.cshtml" />
     <Content Include="Views\Commandes\IndexRestaurant.cshtml" />
+    <Content Include="Views\Commandes\HistoriqueUtilisateur.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

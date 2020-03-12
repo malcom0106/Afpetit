@@ -14,7 +14,19 @@ namespace Afpetit.Controllers
     {
         private AfpEatEntities db = new AfpEatEntities();
 
-        // GET: Commandes
+        // GET: Commandes/HistoriqueUtilisateur
+        public ActionResult HistoriqueUtilisateur()
+        {
+            if (Session["Utilisateur"] != null)
+            {
+                Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];
+                var commandes = db.Commandes.Include(c => c.EtatCommande).Include(c => c.Restaurant).Include(c => c.Utilisateur).Where(c => c.IdUtilisateur == utilisateur.IdUtilisateur);
+                return View(commandes.ToList());
+            }
+            return RedirectToAction("Index", "Home", null);
+        }
+
+        // GET: Commandes/IndexRestaurant
         public ActionResult IndexRestaurant()
         {
             if(Session["Restaurant"] != null)

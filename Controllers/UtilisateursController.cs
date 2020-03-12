@@ -14,7 +14,6 @@ namespace Afpetit.Controllers
 {
     public class UtilisateursController : Controller
     {
-        private AfpEatEntities db = new AfpEatEntities();
         private DaoUtilisateur daoUtilisateur = new DaoUtilisateur();
 
         // GET: Restaurants/ChangePassword/

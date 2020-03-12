@@ -88,52 +88,52 @@ namespace Afpetit.Controllers
 
         // GET: Restaurants/Details/5
         public ActionResult Details(int? id)
-        {
-            
+        {            
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Restaurant restaurant = db.Restaurants.Find(id);
-
-            var produits = db.Produits.Where(m => m.IdRestaurant == id).ToList();
-
-            foreach(Menu menu in restaurant.Menus)
-            {
-                if (menu != null && menu.Statut)
-                {
-                    Dictionary<string, List<SelectListItem>> menucategorieDLL = new Dictionary<string, List<SelectListItem>>();
-                    foreach (var categorie in menu.Categories)
-                    {
-                        List<Produit> produits1 = produits.Where(p => p.IdCategorie == categorie.IdCategorie).ToList();
-
-                        // On crée les items d'un select (dropdownlist)
-                        List<SelectListItem> items = new List<SelectListItem>();
-
-                        foreach (Produit produit in produits1)
-                        {
-                            if (produit.Statut)
-                            {
-                                items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
-                            }                            
-                        }
-                        menucategorieDLL.Add("cat"+categorie.IdCategorie, items);
-                        ViewData["menu" + menu.IdMenu] = menucategorieDLL;
-                    }
-                }                
-            }
             
-            if (restaurant == null)
+            Restaurant restaurant = daoRestaurant.GetRestaurantById((int)id);
+            if(restaurant != null)
+            {
+                var produits = daoRestaurant.GetProduitRestaurant(restaurant);
+                foreach (Menu menu in restaurant.Menus)
+                {
+                    if (menu != null && menu.Statut)
+                    {
+                        Dictionary<string, List<SelectListItem>> menucategorieDLL = new Dictionary<string, List<SelectListItem>>();
+                        foreach (var categorie in menu.Categories)
+                        {
+                            List<Produit> produits1 = produits.Where(p => p.IdCategorie == categorie.IdCategorie).ToList();
+
+                            // On crée les items d'un select (dropdownlist)
+                            List<SelectListItem> items = new List<SelectListItem>();
+
+                            foreach (Produit produit in produits1)
+                            {
+                                if (produit.Statut)
+                                {
+                                    items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
+                                }
+                            }
+                            menucategorieDLL.Add("cat" + categorie.IdCategorie, items);
+                            ViewData["menu" + menu.IdMenu] = menucategorieDLL;
+                        }
+                    }
+                }
+            }
+            else
             {
                 return HttpNotFound();
-            }
+            } 
             return View(restaurant);
         }
 
         // GET: Restaurants/Create
         public ActionResult Create()
         {
-            ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom");
+            ViewBag.IdTypeCuisine = new SelectList(daoRestaurant.GetCuisine(), "IdTypeCuisine", "Nom");
             return View();
         }
 
@@ -148,31 +148,17 @@ namespace Afpetit.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (file.ContentLength > 0 && file.ContentLength < 2500000)
+                    if(daoRestaurant.CreateRestaurant(restaurant, file))
                     {
-                        if (Functions.IsImage(file))
-                        {
-                            var fileName = Path.GetFileName(file.FileName);
-                            var pathBDD = "/Images/Upload/" + fileName;
-                            var path = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
-                            file.SaveAs(path);
-                            Photo photo = new Photo
-                            {
-                                Nom = fileName,
-                                Statut = true,
-                                Url = pathBDD
-                            };
-                            restaurant.Photos.Add(photo);
-                            db.Restaurants.Add(restaurant);                            
-                            db.SaveChanges();                            
-                        }
-                    }                    
+                        return RedirectToAction("Index");
+                    }
+                    return View(restaurant);
                 }
-                return RedirectToAction("Index");
+                return View(restaurant);
             } 
             catch (Exception ex)
             {
-                ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
+                ViewBag.IdTypeCuisine = new SelectList(daoRestaurant.GetCuisine(), "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
                 ViewBag.Error = ex.Message;
                 return View(restaurant);
             }
@@ -185,12 +171,13 @@ namespace Afpetit.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Restaurant restaurant = db.Restaurants.Find(id);
+
+            Restaurant restaurant = daoRestaurant.GetRestaurantById((int)id);
             if (restaurant == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
+            ViewBag.IdTypeCuisine = new SelectList(daoRestaurant.GetCuisine(), "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
             return View(restaurant);
         }
 
@@ -203,11 +190,14 @@ namespace Afpetit.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(restaurant).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (daoRestaurant.EditRestaurant(restaurant))
+                {
+                    return RedirectToAction("Index");
+                }
+                ViewBag.IdTypeCuisine = new SelectList(daoRestaurant.GetCuisine(), "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
+                return View(restaurant);
             }
-            ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
+            ViewBag.IdTypeCuisine = new SelectList(daoRestaurant.GetCuisine(), "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
             return View(restaurant);
         }
 
@@ -218,8 +208,7 @@ namespace Afpetit.Controllers
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                var produits = db.Produits.Include(p => p.Categorie).Include(p => p.Restaurant).Where(p => p.IdRestaurant == restaurant.IdRestaurant);
-                return View(produits.ToList());
+                return View(daoRestaurant.GetProduitRestaurant(daoRestaurant.GetRestaurantById(restaurant.IdRestaurant)));
             }
             else
             {
@@ -274,8 +263,8 @@ namespace Afpetit.Controllers
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                Restaurant restaurant1 = db.Restaurants.Find(restaurant.IdRestaurant);
-                return View(restaurant1);
+                Restaurant resto = daoRestaurant.GetRestaurantById(restaurant.IdRestaurant);
+                return View(resto);
             }
             else
             {
@@ -303,7 +292,7 @@ namespace Afpetit.Controllers
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
+                ViewBag.IdTypeCuisine = new SelectList(daoRestaurant.GetCuisine(), "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
                 return View(restaurant);
             }
             else
@@ -325,7 +314,7 @@ namespace Afpetit.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
+            ViewBag.IdTypeCuisine = new SelectList(daoRestaurant.GetCuisine(), "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
             return View(restaurant);
         }
 
@@ -363,28 +352,11 @@ namespace Afpetit.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddPhoto(HttpPostedFileBase file)
         {
-            if(Session["Restaurant"] != null)
+            if(Session["Restaurant"] != null && file != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                Restaurant monRestaurant = db.Restaurants.Find(restaurant.IdRestaurant);
-                if (file.ContentLength > 0 && file.ContentLength < 2500000)
-                {
-                    if (Functions.IsImage(file))
-                    {
-                        var fileName = Path.GetFileName(file.FileName);
-                        var pathBDD = "/Images/Upload/" + fileName;
-                        var path = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
-                        file.SaveAs(path);
-                        Photo photo = new Photo
-                        {
-                            Nom = fileName,
-                            Statut = true,
-                            Url = pathBDD
-                        };
-                        monRestaurant.Photos.Add(photo);
-                        db.SaveChanges();
-                    }
-                }
+                daoRestaurant.AddPhoto(restaurant, file);
+                return RedirectToAction("ChangePhoto", "Restaurants");
             }            
             return RedirectToAction("ChangePhoto", "Restaurants");
         }
@@ -402,6 +374,7 @@ namespace Afpetit.Controllers
             {
                 return RedirectToAction("Connexion", "Restaurants");
             }
+            // A TERMINER
         }
 
 
@@ -425,32 +398,17 @@ namespace Afpetit.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(FormCollection formCollection)
         {
-
             if (Session["Restaurant"] != null)
             {
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 string newPassword1 = formCollection["NewPassword1"];
                 string newPassword2 = formCollection["NewPassword2"];
-
-                Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                Restaurant verificationPassword = db.Restaurants.Where(r => r.IdRestaurant == restaurant.IdRestaurant).FirstOrDefault();
-                if(verificationPassword != null)
+                if (daoRestaurant.ChangePassword(restaurant, newPassword1, newPassword2))
                 {
-                    if (newPassword1 == newPassword2)
-                    {
-                        verificationPassword.Password = Crypto.HashPassword(newPassword2);
-                        db.SaveChanges();
-                        Session.Remove("Restaurant");
-                        return RedirectToAction("ConnexionRestaurant", "Restaurants");
-                    }
-                    else
-                    {
-                        ViewBag.Message = "Les deux nouveau mot de passe sont incorrrect";
-                    }
-                }                
-            }
-            
-            return RedirectToAction("Connexion", "Restaurants");
-
+                    Session.Remove("Restaurant");                    
+                }               
+            } 
+            return RedirectToAction("ConnexionRestaurant", "Restaurants");
         }
 
         protected override void Dispose(bool disposing)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Afpetit.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,11 @@ namespace Afpetit.Utilities
     public static class Functions 
     {
         public const int ImageMinimumBytes = 512;
+        /// <summary>
+        /// Verifier si le fichier transferé est bien une image
+        /// </summary>
+        /// <param name="postedFile">Fileposté</param>
+        /// <returns>Boolean True en cas de success</returns>
         public static bool IsImage(this HttpPostedFileBase postedFile)
         {
             //-------------------------------------------
@@ -89,6 +95,35 @@ namespace Afpetit.Utilities
                 postedFile.InputStream.Position = 0;
             }
             return true;
+        }
+
+        public static Photo CreatePhoto(HttpPostedFileBase file)
+        {
+            try
+            {
+                Photo photo = null;
+                if (file.ContentLength > 0 && file.ContentLength < 2500000)
+                {
+                    if (Functions.IsImage(file))
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var pathBDD = "/Images/Upload/" + fileName;
+                        var path = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/Upload"), fileName);
+                        file.SaveAs(path);
+                        photo = new Photo
+                        {
+                            Nom = fileName,
+                            Statut = true,
+                            Url = pathBDD
+                        };
+                    }
+                }
+                return photo;
+            } 
+            catch(Exception ex)
+            {
+                throw ex;
+            }            
         }
 
         public static string carouselImages(List<object> obj)

@@ -15,9 +15,9 @@ namespace Afpetit.Dao
         /// </summary>
         /// <param name="utilisateur"></param>
         /// <returns>Objet Utilisateur</returns>
-        public Utilisateur GetUtilisateurById(Utilisateur utilisateur)
+        public Utilisateur GetUtilisateurById(int IdUtilisateur)
         {
-            Utilisateur user = db.Utilisateurs.Where(r => r.IdUtilisateur == utilisateur.IdUtilisateur).FirstOrDefault();
+            Utilisateur user = db.Utilisateurs.Where(r => r.IdUtilisateur == IdUtilisateur).FirstOrDefault();
             return user;
         }
 
@@ -42,7 +42,7 @@ namespace Afpetit.Dao
         {
             try
             {
-                Utilisateur user = this.GetUtilisateurById(utilisateur);
+                Utilisateur user = this.GetUtilisateurById(utilisateur.IdUtilisateur);
                 if (user != null)
                 {
                     if (password1 == password2)

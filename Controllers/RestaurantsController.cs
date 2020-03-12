@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using Afpetit.Dao;
 using Afpetit.Models;
 using Afpetit.Utilities;
 
@@ -19,60 +20,60 @@ namespace Afpetit.Controllers
         //Request.UrlReferrer.ToString()
 
         private AfpEatEntities db = new AfpEatEntities();
-        private Commande commande;
+        private DaoRestaurant daoRestaurant = new DaoRestaurant();
 
         // GET: Add Produit dans commande
-        public ActionResult AddProduit(int? IdProduit, int? IdRestaurant)
-        {
-            int idProduit = Convert.ToInt32(IdProduit);
-            int idRestaurant = Convert.ToInt32(IdRestaurant);
-            bool ProduitExiste = false;
-            if (Session["Commande"] != null)
-            {
-                commande = (Commande)Session["Commande"];   
-                if(commande.CommandeProduits.Count() > 0)
-                {
-                    foreach(CommandeProduit item in commande.CommandeProduits)
-                    {
-                        if(item.IdProduit == idProduit)
-                        {
-                            ProduitExiste = true;
-                            item.Quantite++;
-                        }
-                    }
-                    if (!ProduitExiste)
-                    {
-                        CommandeProduit commandeProduit = new CommandeProduit();
-                        Produit produit = db.Produits.Where(p => p.IdProduit == idProduit).FirstOrDefault();
-                        commandeProduit.Produit = produit;
-                        commandeProduit.IdProduit = produit.IdProduit;
-                        commandeProduit.Prix = produit.Prix;
-                        commandeProduit.Quantite = 1;
-                        commande.CommandeProduits.Add(commandeProduit);
-                    }
-                }
-            }
-            else
-            {
-                commande = new Commande();
-                CommandeProduit commandeProduit = new CommandeProduit();
-                Produit produit = db.Produits.Where(p => p.IdProduit == idProduit).FirstOrDefault();
-                commandeProduit.Produit = produit;
-                commandeProduit.IdProduit = produit.IdProduit;
-                commandeProduit.Prix = produit.Prix;
-                commandeProduit.Quantite = 1;
-                commande.CommandeProduits.Add(commandeProduit);
-            }
-            Session["Commande"] = commande;
+        //public ActionResult AddProduit(int? IdProduit, int? IdRestaurant)
+        //{
+        //    int idProduit = Convert.ToInt32(IdProduit);
+        //    int idRestaurant = Convert.ToInt32(IdRestaurant);
+        //    bool ProduitExiste = false;
+        //    if (Session["Commande"] != null)
+        //    {
+        //        commande = (Commande)Session["Commande"];   
+        //        if(commande.CommandeProduits.Count() > 0)
+        //        {
+        //            foreach(CommandeProduit item in commande.CommandeProduits)
+        //            {
+        //                if(item.IdProduit == idProduit)
+        //                {
+        //                    ProduitExiste = true;
+        //                    item.Quantite++;
+        //                }
+        //            }
+        //            if (!ProduitExiste)
+        //            {
+        //                CommandeProduit commandeProduit = new CommandeProduit();
+        //                Produit produit = db.Produits.Where(p => p.IdProduit == idProduit).FirstOrDefault();
+        //                commandeProduit.Produit = produit;
+        //                commandeProduit.IdProduit = produit.IdProduit;
+        //                commandeProduit.Prix = produit.Prix;
+        //                commandeProduit.Quantite = 1;
+        //                commande.CommandeProduits.Add(commandeProduit);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        commande = new Commande();
+        //        CommandeProduit commandeProduit = new CommandeProduit();
+        //        Produit produit = db.Produits.Where(p => p.IdProduit == idProduit).FirstOrDefault();
+        //        commandeProduit.Produit = produit;
+        //        commandeProduit.IdProduit = produit.IdProduit;
+        //        commandeProduit.Prix = produit.Prix;
+        //        commandeProduit.Quantite = 1;
+        //        commande.CommandeProduits.Add(commandeProduit);
+        //    }
+        //    Session["Commande"] = commande;
 
-            return RedirectToAction("Details/"+ idRestaurant.ToString());
-        }
+        //    return RedirectToAction("Details/"+ idRestaurant.ToString());
+        //}
 
         // GET: Restaurants
         public ActionResult Index(int? IdTypeCuisine, int? IdRestaurant)
         {
             //string urls = Request.UrlReferrer.ToString();
-            List<Restaurant> restaurants = db.Restaurants.Include(r => r.TypeCuisine).ToList();
+            List<Restaurant> restaurants = daoRestaurant.GetRestaurants();
 
             if (IdTypeCuisine != null)
             {

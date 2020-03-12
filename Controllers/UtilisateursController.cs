@@ -93,12 +93,15 @@ namespace Afpetit.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Utilisateur utilisateur = db.Utilisateurs.Find(id);
-            if (utilisateur == null)
+            else
             {
-                return HttpNotFound();
-            }
-            return View(utilisateur);
+                Utilisateur utilisateur = daoUtilisateur.GetUtilisateurById((int)id);
+                if (utilisateur == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(utilisateur);
+            }             
         }
 
         // POST: Utilisateurs/Edit/5        
@@ -152,10 +155,11 @@ namespace Afpetit.Controllers
         }
 
         protected override void Dispose(bool disposing)
-        {
+        {            
             if (disposing)
             {
-                db.Dispose();
+                DaoDispose daoDispose = new DaoDispose();
+                daoDispose.DbDispose();
             }
             base.Dispose(disposing);
         }

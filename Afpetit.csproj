@@ -461,6 +461,7 @@
     <Content Include="Views\Restaurants\AddPhoto.cshtml" />
     <Content Include="Views\Commandes\IndexRestaurant.cshtml" />
     <Content Include="Views\Commandes\HistoriqueUtilisateur.cshtml" />
+    <Content Include="Views\Utilisateurs\ChangePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

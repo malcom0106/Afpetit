@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Afpetit.Models;
 
@@ -13,6 +14,54 @@ namespace Afpetit.Controllers
     public class UtilisateursController : Controller
     {
         private AfpEatEntities db = new AfpEatEntities();
+
+        // GET: Restaurants/ChangePassword/
+        public ActionResult ChangePassword()
+        {
+            if (Session["utilisateur"] != null)
+            {
+                Utilisateur utilisateur = (Utilisateur)Session["utilisateur"];
+                return View(utilisateur);
+            }
+            else
+            {
+                return RedirectToAction("Connexion", "Restaurants");
+            }
+        }
+
+
+        //POST: Restaurant/ChangePassword/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(FormCollection formCollection)
+        {
+
+            if (Session["utilisateur"] != null)
+            {
+                string newPassword1 = formCollection["NewPassword1"];
+                string newPassword2 = formCollection["NewPassword2"];
+
+                Utilisateur utilisateur = (Utilisateur)Session["utilisateur"];
+                Utilisateur verificationPassword = db.Utilisateurs.Where(r => r.IdUtilisateur == utilisateur.IdUtilisateur).FirstOrDefault();
+                if (verificationPassword != null)
+                {
+                    if (newPassword1 == newPassword2)
+                    {
+                        verificationPassword.Password = Crypto.HashPassword(newPassword2);
+                        db.SaveChanges();
+                        Session.Remove("utilisateur");
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Les deux nouveau mot de passe sont incorrrect";
+                    }
+                }
+            }
+
+            return RedirectToAction("Connexion", "Utilisateurs");
+
+        }
 
         // GET: Utilisateurs
         public ActionResult ListeInscrits()

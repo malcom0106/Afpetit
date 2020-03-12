@@ -30,15 +30,15 @@
                 </div>
                 @{
                     string isConnected = "";
-                    if (Session["utilisateur"] != null)
+                    if (Session["Utilisateur"] != null)
                     {
-                        Afpetit.Models.Utilisateur utilisateur = (Afpetit.Models.Utilisateur)Session["utilisateur"];
+                        Afpetit.Models.Utilisateur utilisateur = (Afpetit.Models.Utilisateur)Session["Utilisateur"];
                         if (utilisateur != null)
                         {
                             isConnected = "true";
-                            <span class="navbar-text">
-                                @utilisateur.Nom @utilisateur.Prenom
-                            </span>
+                                <span class="nav-item">
+                                    @Html.ActionLink(@utilisateur.Nom + " " + @utilisateur.Prenom, "Deconnexion", "Utilisateurs", null, new { @class = "btn btn-outline-secondary" })                                    
+                                </span>
                         }
                     }
                     else

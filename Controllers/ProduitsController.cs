@@ -19,10 +19,10 @@ namespace Afpetit.Controllers
         // GET: Produits
         public ActionResult Index()
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 var produits = db.Produits.Include(p => p.Categorie).Include(p => p.Restaurant).Where(p => p.IdRestaurant == restaurant.IdRestaurant);
                 return View(produits.ToList());
             }
@@ -35,16 +35,16 @@ namespace Afpetit.Controllers
         // GET: Statut du produit
         public ActionResult Statut(int? id)
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {                
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
 
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 Produit produit = db.Produits.Find(id);
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 if (produit == null)
                 {
                     return HttpNotFound();
@@ -65,10 +65,10 @@ namespace Afpetit.Controllers
         // GET: Produits/Details/5
         public ActionResult Details(int? id)
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -89,10 +89,10 @@ namespace Afpetit.Controllers
         // GET: Produits/Create
         public ActionResult Create()
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 ViewBag.IdRestaurant = restaurant.IdRestaurant;
                 ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
 
@@ -140,7 +140,7 @@ namespace Afpetit.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Restaurant monRestaurant = (Restaurant)Session["restaurant"];
+                    Restaurant monRestaurant = (Restaurant)Session["Restaurant"];
 
                     ViewBag.IdRestaurant = monRestaurant.IdRestaurant;
                     ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
@@ -148,7 +148,7 @@ namespace Afpetit.Controllers
                     return View(produit);
                 }
             }
-            Restaurant restaurant = (Restaurant)Session["restaurant"];
+            Restaurant restaurant = (Restaurant)Session["Restaurant"];
 
             ViewBag.IdRestaurant = restaurant.IdRestaurant;
             ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
@@ -158,9 +158,9 @@ namespace Afpetit.Controllers
         // GET: Produits/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

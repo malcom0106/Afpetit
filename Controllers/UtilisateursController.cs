@@ -5,7 +5,9 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
+using Afpetit.Dao;
 using Afpetit.Models;
 
 namespace Afpetit.Controllers
@@ -13,11 +15,49 @@ namespace Afpetit.Controllers
     public class UtilisateursController : Controller
     {
         private AfpEatEntities db = new AfpEatEntities();
+        private DaoUtilisateur daoUtilisateur = new DaoUtilisateur();
+
+        // GET: Restaurants/ChangePassword/
+        public ActionResult ChangePassword()
+        {
+            if (Session["Utilisateur"] != null)
+            {
+                Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];
+                return View(utilisateur);
+            }
+            else
+            {
+                return RedirectToAction("Connexion", "Restaurants");
+            }
+        }
+
+
+        //POST: Restaurant/ChangePassword/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(FormCollection formCollection)
+        {
+            if (Session["Utilisateur"] != null)
+            {                
+                string newPassword1 = formCollection["NewPassword1"];
+                string newPassword2 = formCollection["NewPassword2"];
+
+                Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];
+                if(daoUtilisateur.ChangePassword(utilisateur, newPassword1, newPassword2))
+                {
+                    Session.Remove("Utilisateur");
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            return RedirectToAction("Connexion", "Utilisateurs");
+
+        }
 
         // GET: Utilisateurs
         public ActionResult ListeInscrits()
         {
-            return View(db.Utilisateurs.ToList());
+            return View(daoUtilisateur.GetUtilisateurs());
         }
 
 
@@ -35,11 +75,15 @@ namespace Afpetit.Controllers
             if (ModelState.IsValid)
             {
                 utilisateur.IdSession = Session.SessionID;
-                db.Utilisateurs.Add(utilisateur);
-                db.SaveChanges();
-                return RedirectToAction("ListeInscrits");
+                if (daoUtilisateur.AddUtilisateur(utilisateur))
+                {
+                    return RedirectToAction("ListeInscrits");
+                }
+                else
+                {
+                    return View(utilisateur);
+                }
             }
-
             return View(utilisateur);
         }
 
@@ -65,9 +109,15 @@ namespace Afpetit.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(utilisateur).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (daoUtilisateur.EditUtilisateur(utilisateur))
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View(utilisateur);
+                }
+                
             }
             return View(utilisateur);
         }
@@ -85,18 +135,11 @@ namespace Afpetit.Controllers
         {
             if (ModelState.IsValid)
             {
-                Afpetit.Models.Utilisateur client = db.Utilisateurs.Where(u => u.Matricule == utilisateur.Matricule).Where(u => u.Password == utilisateur.Password).FirstOrDefault();
-                if (client != null)
+                if(daoUtilisateur.Connexion(utilisateur, Session.SessionID))
                 {
-                    client.IdSession = Session.SessionID;
-                    db.SaveChanges();
-                    Session["Utilisateur"] = client;
-                    return RedirectToAction("Index","Home");
+                    return RedirectToAction("Index", "Home");
                 }
-                else
-                {
-                    ViewBag.message = "L'identification a échoué";
-                }                
+                return View();
             }
             return View();
         }

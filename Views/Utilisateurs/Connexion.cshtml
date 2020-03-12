@@ -8,7 +8,7 @@
 @{
     if (ViewBag.utilisateur != null)
     {
-        Session["utilisateur"] = ViewBag.utilisateur;
+        Session["Utilisateur"] = ViewBag.utilisateur;
         Html.Action("ListeInscrits","Utilisateurs",null);
     }
     if (!String.IsNullOrEmpty(ViewBag.message))

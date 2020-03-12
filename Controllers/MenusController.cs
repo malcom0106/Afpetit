@@ -17,10 +17,10 @@ namespace Afpetit.Controllers
         // GET: Menus
         public ActionResult Index()
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 var menus = db.Menus.Include(m => m.Restaurant);
                 return View(menus.ToList());
             }
@@ -67,16 +67,16 @@ namespace Afpetit.Controllers
         // GET: Statut du Menu
         public ActionResult Statut(int? id)
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
 
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 Menu menu = db.Menus.Find(id);
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 if (menu == null)
                 {
                     return HttpNotFound();
@@ -97,10 +97,10 @@ namespace Afpetit.Controllers
         // GET: Menus/Create
         public ActionResult Create()
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 return View();
             }
             else
@@ -135,11 +135,11 @@ namespace Afpetit.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
                 Menu menu = db.Menus.Find(idmenu);
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
 
                 ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
                 return View(menu);
@@ -162,12 +162,12 @@ namespace Afpetit.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
                 Menu menu = db.Menus.Find(idmenu);
                 Categorie categorie = db.Categories.Find(idcategorie);
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 menu.Categories.Add(categorie);
                 db.SaveChanges();
                 ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");

@@ -5,14 +5,14 @@
 @{
     Afpetit.Models.Utilisateur utilisateur = null;
     bool isConnected = false;
-    //if (Session["utilisateur"] != null)
+    //if (Session["Utilisateur"] != null)
     //{
-    //    utilisateur = (Afpetit.Models.Utilisateur)Session["utilisateur"];
+    //    utilisateur = (Afpetit.Models.Utilisateur)Session["Utilisateur"];
     //    isConnected = true;
     //}
 
     //Opération ternaire
-    isConnected = (Session["utilisateur"] != null ? true : false);
+    isConnected = (Session["Utilisateur"] != null ? true : false);
 }
 @section entete
     {

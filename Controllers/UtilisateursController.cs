@@ -18,9 +18,9 @@ namespace Afpetit.Controllers
         // GET: Restaurants/ChangePassword/
         public ActionResult ChangePassword()
         {
-            if (Session["utilisateur"] != null)
+            if (Session["Utilisateur"] != null)
             {
-                Utilisateur utilisateur = (Utilisateur)Session["utilisateur"];
+                Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];
                 return View(utilisateur);
             }
             else
@@ -35,13 +35,12 @@ namespace Afpetit.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(FormCollection formCollection)
         {
-
-            if (Session["utilisateur"] != null)
+            if (Session["Utilisateur"] != null)
             {
                 string newPassword1 = formCollection["NewPassword1"];
                 string newPassword2 = formCollection["NewPassword2"];
 
-                Utilisateur utilisateur = (Utilisateur)Session["utilisateur"];
+                Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];
                 Utilisateur verificationPassword = db.Utilisateurs.Where(r => r.IdUtilisateur == utilisateur.IdUtilisateur).FirstOrDefault();
                 if (verificationPassword != null)
                 {
@@ -134,8 +133,9 @@ namespace Afpetit.Controllers
         {
             if (ModelState.IsValid)
             {
-                Afpetit.Models.Utilisateur client = db.Utilisateurs.Where(u => u.Matricule == utilisateur.Matricule).Where(u => u.Password == utilisateur.Password).FirstOrDefault();
-                if (client != null)
+                Utilisateur client = db.Utilisateurs.Where(u => u.Matricule == utilisateur.Matricule).Where(u => u.Password == utilisateur.Password).FirstOrDefault();
+                bool passwordValid = Crypto.VerifyHashedPassword(client.Password, utilisateur.Password);
+                if (passwordValid)
                 {
                     client.IdSession = Session.SessionID;
                     db.SaveChanges();

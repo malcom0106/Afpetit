@@ -30,9 +30,9 @@
                 </div>
                 @{
                     string isConnected = "";
-                    if (Session["utilisateur"] != null)
+                    if (Session["Utilisateur"] != null)
                     {
-                        Afpetit.Models.Utilisateur utilisateur = (Afpetit.Models.Utilisateur)Session["utilisateur"];
+                        Afpetit.Models.Utilisateur utilisateur = (Afpetit.Models.Utilisateur)Session["Utilisateur"];
                         if (utilisateur != null)
                         {
                             isConnected = "true";

@@ -285,9 +285,9 @@ namespace Afpetit.Controllers
         // GET: Restaurants/DetailsRestaurant/5
         public ActionResult DetailsRestaurant()
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 return View(restaurant);
             }
             else
@@ -299,9 +299,9 @@ namespace Afpetit.Controllers
         // GET: Restaurants/EditRestaurant/
         public ActionResult EditRestaurant()
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 ViewBag.IdTypeCuisine = new SelectList(db.TypeCuisines, "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
                 return View(restaurant);
             }
@@ -391,9 +391,9 @@ namespace Afpetit.Controllers
         // GET: Restaurants/ChangePhoto/
         public ActionResult ChangePhoto()
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 Restaurant monRestaurant = db.Restaurants.Find(restaurant.IdRestaurant);
                 return View(monRestaurant);
             }
@@ -407,9 +407,9 @@ namespace Afpetit.Controllers
         // GET: Restaurants/ChangePassword/
         public ActionResult ChangePassword()
         {
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 return View(restaurant);
             }
             else
@@ -425,12 +425,12 @@ namespace Afpetit.Controllers
         public ActionResult ChangePassword(FormCollection formCollection)
         {
 
-            if (Session["restaurant"] != null)
+            if (Session["Restaurant"] != null)
             {
                 string newPassword1 = formCollection["NewPassword1"];
                 string newPassword2 = formCollection["NewPassword2"];
 
-                Restaurant restaurant = (Restaurant)Session["restaurant"];
+                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 Restaurant verificationPassword = db.Restaurants.Where(r => r.IdRestaurant == restaurant.IdRestaurant).FirstOrDefault();
                 if(verificationPassword != null)
                 {

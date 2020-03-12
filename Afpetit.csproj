@@ -141,6 +141,7 @@
     <Compile Include="Dao\DaoAccess.cs" />
     <Compile Include="Dao\DaoCommande.cs" />
     <Compile Include="Dao\DaoDispose.cs" />
+    <Compile Include="Dao\DaoProduit.cs" />
     <Compile Include="Dao\DaoRestaurant.cs" />
     <Compile Include="Dao\DaoUtilisateur.cs" />
     <Compile Include="Global.asax.cs">

@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using Afpetit.Dao;
 using Afpetit.Models;
 
 namespace Afpetit.Controllers
@@ -14,6 +15,7 @@ namespace Afpetit.Controllers
     public class UtilisateursController : Controller
     {
         private AfpEatEntities db = new AfpEatEntities();
+        private DaoUtilisateur daoUtilisateur = new DaoUtilisateur();
 
         // GET: Restaurants/ChangePassword/
         public ActionResult ChangePassword()
@@ -36,25 +38,15 @@ namespace Afpetit.Controllers
         public ActionResult ChangePassword(FormCollection formCollection)
         {
             if (Session["Utilisateur"] != null)
-            {
+            {                
                 string newPassword1 = formCollection["NewPassword1"];
                 string newPassword2 = formCollection["NewPassword2"];
 
                 Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];
-                Utilisateur verificationPassword = db.Utilisateurs.Where(r => r.IdUtilisateur == utilisateur.IdUtilisateur).FirstOrDefault();
-                if (verificationPassword != null)
+                if(daoUtilisateur.ChangePassword(utilisateur, newPassword1, newPassword2))
                 {
-                    if (newPassword1 == newPassword2)
-                    {
-                        verificationPassword.Password = Crypto.HashPassword(newPassword2);
-                        db.SaveChanges();
-                        Session.Remove("utilisateur");
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        ViewBag.Message = "Les deux nouveau mot de passe sont incorrrect";
-                    }
+                    Session.Remove("Utilisateur");
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
@@ -65,7 +57,7 @@ namespace Afpetit.Controllers
         // GET: Utilisateurs
         public ActionResult ListeInscrits()
         {
-            return View(db.Utilisateurs.ToList());
+            return View(daoUtilisateur.GetUtilisateurs());
         }
 
 
@@ -83,11 +75,15 @@ namespace Afpetit.Controllers
             if (ModelState.IsValid)
             {
                 utilisateur.IdSession = Session.SessionID;
-                db.Utilisateurs.Add(utilisateur);
-                db.SaveChanges();
-                return RedirectToAction("ListeInscrits");
+                if (daoUtilisateur.AddUtilisateur(utilisateur))
+                {
+                    return RedirectToAction("ListeInscrits");
+                }
+                else
+                {
+                    return View(utilisateur);
+                }
             }
-
             return View(utilisateur);
         }
 
@@ -113,9 +109,15 @@ namespace Afpetit.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(utilisateur).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (daoUtilisateur.EditUtilisateur(utilisateur))
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View(utilisateur);
+                }
+                
             }
             return View(utilisateur);
         }
@@ -133,19 +135,11 @@ namespace Afpetit.Controllers
         {
             if (ModelState.IsValid)
             {
-                Utilisateur client = db.Utilisateurs.Where(u => u.Matricule == utilisateur.Matricule).Where(u => u.Password == utilisateur.Password).FirstOrDefault();
-                bool passwordValid = Crypto.VerifyHashedPassword(client.Password, utilisateur.Password);
-                if (passwordValid)
+                if(daoUtilisateur.Connexion(utilisateur, Session.SessionID))
                 {
-                    client.IdSession = Session.SessionID;
-                    db.SaveChanges();
-                    Session["Utilisateur"] = client;
-                    return RedirectToAction("Index","Home");
+                    return RedirectToAction("Index", "Home");
                 }
-                else
-                {
-                    ViewBag.message = "L'identification a échoué";
-                }                
+                return View();
             }
             return View();
         }

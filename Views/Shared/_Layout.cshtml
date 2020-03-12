@@ -36,9 +36,9 @@
                         if (utilisateur != null)
                         {
                             isConnected = "true";
-                            <span class="navbar-text">
-                                @utilisateur.Nom @utilisateur.Prenom
-                            </span>
+                                <span class="nav-item">
+                                    @Html.ActionLink(@utilisateur.Nom + " " + @utilisateur.Prenom, "Deconnexion", "Utilisateurs", null, new { @class = "btn btn-outline-secondary" })                                    
+                                </span>
                         }
                     }
                     else

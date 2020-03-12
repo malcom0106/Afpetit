@@ -138,6 +138,9 @@
     <Compile Include="Controllers\SwController.cs" />
     <Compile Include="Controllers\TypeCuisinesController.cs" />
     <Compile Include="Controllers\UtilisateursController.cs" />
+    <Compile Include="Dao\DaoAccess.cs" />
+    <Compile Include="Dao\DaoCommande.cs" />
+    <Compile Include="Dao\DaoUtilisateur.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

@@ -112,20 +112,25 @@ namespace Afpetit.Dao
         /// <param name="utilisateur"></param>
         /// <param name="sessionId"></param>
         /// <returns>Retourner un boolean</returns>
-        public bool Connexion(Utilisateur utilisateur, string sessionId)
+        public Utilisateur Connexion(Utilisateur utilisateur, string sessionId)
         {
-            Utilisateur client = db.Utilisateurs.Where(u => u.Matricule == utilisateur.Matricule).FirstOrDefault();
-            bool passwordValid = Crypto.VerifyHashedPassword(client.Password, utilisateur.Password);
-            if (passwordValid)
+            Utilisateur client = null;
+            try
             {
-                client.IdSession = sessionId;
-                db.SaveChanges();                
-                return true;
+                client = db.Utilisateurs.Where(u => u.Matricule == utilisateur.Matricule).FirstOrDefault();                
+                if (Crypto.VerifyHashedPassword(client.Password, utilisateur.Password))
+                {
+                    client.IdSession = sessionId;
+                    db.SaveChanges();                    
+                }
+                return null;
             }
-            else
+            catch(Exception ex)
             {
-                return false;
+
+                throw ex;
             }
+            
         }
     }
 }

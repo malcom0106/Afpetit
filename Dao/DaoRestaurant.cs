@@ -175,7 +175,39 @@ namespace Afpetit.Dao
             
         }
 
+        public bool DelPhoto(Restaurant restaurant, int IdPhoto)
+        {
+            try
+            {
+                Restaurant resto = this.GetRestaurantById(restaurant.IdRestaurant);
+                Photo photo = db.Photos.Find(IdPhoto);
+                resto.Photos.Remove(photo);
+                db.SaveChanges();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
 
+
+        public Restaurant Connexion(Restaurant restaurant)
+        {
+            try
+            {
+                Restaurant monRestaurant = db.Restaurants.Where(r => r.Login == restaurant.Login).SingleOrDefault();
+                if (Crypto.VerifyHashedPassword(monRestaurant.Password, restaurant.Password))
+                {
+                    return monRestaurant;
+                }
+                return null;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
 
     }
 }

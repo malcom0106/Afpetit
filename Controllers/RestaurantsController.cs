@@ -242,12 +242,11 @@ namespace Afpetit.Controllers
         public ActionResult ConnexionRestaurant([Bind(Include = "Login,Password")] Restaurant restaurant)
         {
             if (ModelState.IsValid)
-            {                
-                Restaurant monRestaurant = db.Restaurants.Where(r => r.Login == restaurant.Login).SingleOrDefault();
-                bool passwordValid = Crypto.VerifyHashedPassword(monRestaurant.Password, restaurant.Password);
-                if (passwordValid)
+            {
+                Restaurant resto = daoRestaurant.Connexion(restaurant);
+                if (resto != null)
                 {
-                    Session["Restaurant"] = monRestaurant;
+                    Session["Restaurant"] = resto;
                     return RedirectToAction("IndexRestaurant", "Restaurants");
                 }
                 ViewBag.message = "L'identification a échoué";
@@ -302,17 +301,16 @@ namespace Afpetit.Controllers
         }
 
         // POST: Restaurants/EditRestaurant/
-        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier. Pour 
-        // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditRestaurant([Bind(Include = "IdRestaurant,Nom,Responsable,IdTypeCuisine,Adresse,CodePostal,Ville,Mobile,Telephone,Tag,Budget,Email,Description")] Restaurant restaurant)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(restaurant).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (daoRestaurant.EditRestaurant(restaurant))
+                {
+                    return RedirectToAction("Index");
+                }                
             }
             ViewBag.IdTypeCuisine = new SelectList(daoRestaurant.GetCuisine(), "IdTypeCuisine", "Nom", restaurant.IdTypeCuisine);
             return View(restaurant);
@@ -327,11 +325,11 @@ namespace Afpetit.Controllers
             {
                 if (Session["Restaurant"] != null)
                 {
-                    Restaurant sessionRestaurant = (Restaurant)Session["Restaurant"];
-                    Restaurant restaurant = db.Restaurants.Find(sessionRestaurant.IdRestaurant);
-                    Photo photo = db.Photos.Find(IdPhoto);
-                    restaurant.Photos.Remove(photo);
-                    db.SaveChanges();
+                    Restaurant resto = (Restaurant)Session["Restaurant"];
+                    if(daoRestaurant.DelPhoto(resto, (int)IdPhoto))
+                    {
+                        return RedirectToAction("ChangePhoto", "Restaurants");
+                    }                    
                 }                
             }
             return RedirectToAction("ChangePhoto", "Restaurants");
@@ -367,7 +365,7 @@ namespace Afpetit.Controllers
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                Restaurant monRestaurant = db.Restaurants.Find(restaurant.IdRestaurant);
+                Restaurant monRestaurant = daoRestaurant.GetRestaurantById(restaurant.IdRestaurant);
                 return View(monRestaurant);
             }
             else

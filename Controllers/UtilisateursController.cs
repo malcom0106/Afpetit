@@ -137,8 +137,10 @@ namespace Afpetit.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(daoUtilisateur.Connexion(utilisateur, Session.SessionID))
+                Utilisateur user = daoUtilisateur.Connexion(utilisateur, Session.SessionID);
+                if (user != null )
                 {
+                    Session["Utilisateur"] = user;
                     return RedirectToAction("Index", "Home");
                 }
                 return View();

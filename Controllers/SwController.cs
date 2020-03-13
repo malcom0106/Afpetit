@@ -1,4 +1,5 @@
-﻿using Afpetit.Models;
+﻿using Afpetit.Dao;
+using Afpetit.Models;
 using Afpetit.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,19 +11,23 @@ namespace Afpetit.Controllers
 {
     public class SwController : Controller
     {
-        private AfpEatEntities db = new AfpEatEntities();
+        private readonly AfpEatEntities db = new AfpEatEntities();
+        private DaoUtilisateur daoUtilisateur = new DaoUtilisateur();
+        private DaoMenu daoMenu = new DaoMenu();
+        private DaoProduit daoProduit = new DaoProduit();
+        private DaoCommande daoCommande = new DaoCommande();
         // GET: Sw
 
         public JsonResult AddMenu(int IdMenu, List<int> IdProduits, string s)
         {
             string IdSession = Cryptage.Decrypt(s);
-            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(IdSession);
-            Panier panier = GetPanier(IdSession);
+            SessionUtilisateur sessionUtilisateur = daoUtilisateur.GetSessionUtilisateur(IdSession);
+            Panier panier = GetPanier(sessionUtilisateur.IdSession);
             bool isReturnOk = false;
 
             if (sessionUtilisateur != null && panier != null && IdMenu > 0 && IdProduits.Count > 0)
             {
-                Menu menu = db.Menus.Find(IdMenu);
+                Menu menu = daoMenu.GetMenuById(IdMenu);
 
                 if (menu != null)
                 {
@@ -47,7 +52,7 @@ namespace Afpetit.Controllers
                     isReturnOk = true;
                 }
 
-                HttpContext.Application[IdSession] = panier;
+                HttpContext.Application[sessionUtilisateur.IdSession] = panier;
             }
             string jsonPanier = Newtonsoft.Json.JsonConvert.SerializeObject(panier);
             return Json(new { isReturnOk, qte = panier.Quantite, total = panier.Total, monpanier = jsonPanier }, JsonRequestBehavior.AllowGet);
@@ -56,8 +61,8 @@ namespace Afpetit.Controllers
         public JsonResult AddProduit(int p, string s)
         {
             string IdSession = Cryptage.Decrypt(s);
-            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(IdSession);
-            Panier panier = GetPanier(IdSession);
+            SessionUtilisateur sessionUtilisateur = daoUtilisateur.GetSessionUtilisateur(IdSession);
+            Panier panier = GetPanier(sessionUtilisateur.IdSession);
             bool isReturnOk = false;
 
             if (sessionUtilisateur != null && panier != null && p > 0)
@@ -79,8 +84,7 @@ namespace Afpetit.Controllers
                         isReturnOk = true;
                     }
                 }
-
-                HttpContext.Application[IdSession] = panier;
+                HttpContext.Application[sessionUtilisateur.IdSession] = panier;
             }
 
             string jsonPanier = Newtonsoft.Json.JsonConvert.SerializeObject(panier);
@@ -117,12 +121,12 @@ namespace Afpetit.Controllers
 
         public JsonResult GetProduits(string idsession)
         {
-            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(Session.SessionID);
+            SessionUtilisateur sessionUtilisateur = daoUtilisateur.GetSessionUtilisateur(idsession);
             Panier panier = null;
 
-            if (sessionUtilisateur != null && HttpContext.Application[idsession] != null)
+            if (sessionUtilisateur != null && HttpContext.Application[sessionUtilisateur.IdSession] != null)
             {
-                panier = (Panier)HttpContext.Application[idsession];
+                panier = (Panier)HttpContext.Application[sessionUtilisateur.IdSession];
             }
 
             return Json(panier, JsonRequestBehavior.AllowGet);
@@ -130,87 +134,25 @@ namespace Afpetit.Controllers
 
         public JsonResult SaveCommande(string s)
         {
-            string IdSession = Cryptage.Decrypt(s);
-            SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(IdSession);
-            Panier panier = null;
-
-            if (sessionUtilisateur != null && HttpContext.Application[IdSession] != null)
-            {
-                panier = (Panier)HttpContext.Application[IdSession];
-            }
-
             try
             {
-                Utilisateur utilisateur = db.Utilisateurs.First(p => p.IdSession == IdSession);
+                //decrypage de la SessionID et recherche dans la bdd
+                string IdSession = Cryptage.Decrypt(s);
+                SessionUtilisateur sessionUtilisateur = daoUtilisateur.GetSessionUtilisateur(IdSession);
+                Panier panier = null;
+
+                if (sessionUtilisateur != null && HttpContext.Application[sessionUtilisateur.IdSession] != null)
+                {
+                    panier = (Panier)HttpContext.Application[sessionUtilisateur.IdSession];
+                }
+
+                Utilisateur utilisateur = daoUtilisateur.GetUtilisateurBySessionId(sessionUtilisateur.IdSession);
 
                 if (utilisateur != null && utilisateur.Solde > 0 && panier != null && panier.Count > 0)
                 {
-                    decimal prixTotal = 0;
-
-                    // panier.GetTotal(); -> On fait appel à CalculPanier() à l'ajout ou à la suppression d'un item
-                    prixTotal = panier.Total;
-
-                    if (prixTotal <= utilisateur.Solde)
+                    if(daoCommande.SaveCommande(panier, utilisateur))
                     {
-                        Commande commande = new Commande();
-                        commande.IdUtilisateur = utilisateur.IdUtilisateur;
-                        commande.IdRestaurant = panier.IdRestaurant;
-                        commande.DateCommande = DateTime.Now;
-                        commande.Prix = prixTotal;
-                        commande.IdEtatCommande = 1;
-
-                        utilisateur.Solde -= prixTotal;
-
-                        foreach (ItemPanier item in panier)
-                        {
-                            if (item is ProduitPanier)
-                            {
-                                CommandeProduit commandeProduit = new CommandeProduit();
-                                commandeProduit.IdProduit = item.GetIdProduit();
-                                commandeProduit.Prix = item.Prix;
-                                commandeProduit.Quantite = item.Quantite;
-
-                                commande.CommandeProduits.Add(commandeProduit);
-                            }
-
-                            else if (item is MenuPanier menuPanier)
-                            {
-                                List<ProduitPanier> produitPaniers = menuPanier.produits;
-                                Menu menu = db.Menus.Find(item.GetIdMenu());
-
-                                foreach (ProduitPanier produitPanier in produitPaniers)
-                                {
-                                    CommandeProduit commandeProduit = new CommandeProduit();
-                                    commandeProduit.IdProduit = produitPanier.IdProduit;
-                                    commandeProduit.Prix = 0;
-                                    commandeProduit.Quantite = 1;
-                                    commandeProduit.Menus.Add(menu);
-                                    //commandeProduit.Menus.FirstOrDefault().IdMenu = item.GetIdMenu();
-
-                                    commande.CommandeProduits.Add(commandeProduit);
-                                }
-                            }
-
-                            else if (item is ProduitComposePanier produitComposePanier)
-                            {
-                                List<ProduitPanier> produitPaniers = produitComposePanier.produits;
-                                foreach (ProduitPanier produitPanier in produitPaniers)
-                                {
-                                    CommandeProduit commandeProduit = new CommandeProduit();
-                                    commandeProduit.IdProduit = item.GetIdProduit();
-                                    commandeProduit.Prix = item.Prix;
-                                    commandeProduit.Quantite = item.Quantite;
-
-                                    commande.CommandeProduits.Add(commandeProduit);
-                                }
-                            }
-
-                        }
-
-                        db.Commandes.Add(commande);
-                        db.SaveChanges();
-
-                        HttpContext.Application.Clear();
+                        HttpContext.Application.Remove(utilisateur.IdSession);
                     }
                 }
                 return Json(new { idutilisateur = utilisateur.IdUtilisateur }, JsonRequestBehavior.AllowGet);
@@ -219,25 +161,9 @@ namespace Afpetit.Controllers
             {
                 string er = ex.Message;
             }
-
             return Json(JsonRequestBehavior.AllowGet);
         }
-
-        public JsonResult LoginUtilisateur(string idsession, string matricule, string password)
-        {
-            Utilisateur utilisateur = db.Utilisateurs.FirstOrDefault(u => u.Matricule == matricule && u.Password == password);
-
-            if (utilisateur != null)
-            {
-                utilisateur.IdSession = idsession;
-                db.SaveChanges();
-
-                return Json(new { error = 0, message = "Vous disposez de " + utilisateur.Solde + "€" }, JsonRequestBehavior.AllowGet);
-            }
-
-            return Json(new { error = 1, message = "Vous n'êtes pas connecté(e)" }, JsonRequestBehavior.AllowGet);
-        }
-
+        
         public JsonResult Hasard(int idfood, int idboisson, string idsession)
         {
             SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(Session.SessionID);
@@ -308,36 +234,9 @@ namespace Afpetit.Controllers
             return Json("", JsonRequestBehavior.AllowGet);
         }
 
-        //public JsonResult RemoveFavoris(int idrestaurant, string idsession)
-        //{
-        //    SessionUtilisateur sessionUtilisateur = db.SessionUtilisateurs.Find(Session.SessionID);
-        //    Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];
-
-        //    if (sessionUtilisateur != null && sessionUtilisateur.IdSession == idsession)
-        //    {
-        //        Restaurant restaurant = db.Restaurants.Find(idrestaurant);
-        //        db.Utilisateurs.Where(r => r.Restaurants.FirstOrDefault().Utilisateurs.FirstOrDefault().IdUtilisateur == utilisateur.IdUtilisateur);
-        //        //db.Utilisateurs.Remove(utilisateur);
-        //        //db.SaveChanges();
-        //    }
-
-        //    return Json(idrestaurant, JsonRequestBehavior.AllowGet);
-        //}
-
-        public JsonResult GetFavoris(int idcommande, string idsession)
-        {
-            Utilisateur utilisateur = db.Utilisateurs.Where(u => u.IdSession == idsession).FirstOrDefault();
-
-            Commande commande = db.Commandes.Find(idcommande);
-
-            int a = commande.Restaurant.IdRestaurant;
-
-            return Json(JsonRequestBehavior.AllowGet);
-        }
-
         private ProduitPanier FindProduit(int IdProduit)
         {
-            Produit produit = db.Produits.Find(IdProduit);
+            Produit produit = daoProduit.GetProduitById(IdProduit);
             ProduitPanier produitPanier = null;
 
             if (produit != null)

@@ -280,6 +280,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Images\bg-heading-02.jpg" />
     <Content Include="Images\fond-site.jpg" />
+    <Content Include="Images\network-4851119_640.jpg" />
     <Content Include="Models\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model1.edmx</DependentUpon>

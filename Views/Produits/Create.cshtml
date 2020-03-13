@@ -4,7 +4,7 @@
     ViewBag.Title = "View";
     Layout = "~/Views/Shared/_LayoutResto.cshtml";
 }
-<div class="card-heading"></div>
+<div class="card-heading" style="background: url('../../Images/bg-heading-02.jpg') top left/cover no-repeat"></div>
 <div class="card-body">
     <h2 class="title">Ajouter un produit</h2>
     @using (Html.BeginForm("Create", "Produits", FormMethod.Post, new { enctype = "multipart/form-data" }))

@@ -107,7 +107,7 @@ namespace Afpetit.Controllers
         // POST: Produits/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "IdProduit,IdRestaurant,IdCategorie,Nom,Prix,Description,Quantite,Statut")] Produit produit, HttpPostedFileBase[] files)
+        public ActionResult Create([Bind(Include = "IdProduit,IdRestaurant,IdCategorie,Nom,Prix,Description,Quantite")] Produit produit, HttpPostedFileBase[] files)
         {
             Restaurant monRestaurant = (Restaurant)Session["Restaurant"];
             ViewBag.IdRestaurant = monRestaurant.IdRestaurant;
@@ -117,6 +117,7 @@ namespace Afpetit.Controllers
             {
                 try
                 {
+                    produit.Statut = true;
                     if (daoProduit.CreateProduit(produit, files))
                     {
                         return RedirectToAction("Index");

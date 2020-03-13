@@ -80,10 +80,11 @@ namespace Afpetit.Controllers
         // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "IdMenu,IdRestaurant,Nom,Statut,Prix")] Menu menu)
+        public ActionResult Create([Bind(Include = "IdMenu,IdRestaurant,Nom,Prix")] Menu menu)
         {
             if (ModelState.IsValid)
             {
+                menu.Statut = true;
                 daomenu.CreateMenu(menu);
                 return RedirectToAction("AddCategorie", new { @idmenu = menu.IdMenu });
             }

@@ -6,41 +6,23 @@
     Afpetit.Models.Restaurant restaurant = (Afpetit.Models.Restaurant)ViewBag.Restaurant;
 }
 
-<h2>Create</h2>
 
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-    <h4>Menu</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nom, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Nom, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Nom, "", new { @class = "text-danger" })
+<div class="card-heading"></div>
+<div class="card-body">
+    <h2 class="title">Ajouter un menu</h2>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="input-group">
+            @Html.EditorFor(model => model.Nom, new { htmlAttributes = new { @class = "input--style-2 col-12", @placeholder = "Nom" } })
         </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Prix, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Prix, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Prix, "", new { @class = "text-danger" })
+        <div class="input-group">
+            @Html.EditorFor(model => model.Prix, new { htmlAttributes = new { @class = "input--style-2 col-12", @placeholder = "Prix" } })
         </div>
-    </div>
-    @Html.Hidden("Statut", false)
-    @Html.Hidden("IdRestaurant", restaurant.IdRestaurant)
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-outline-success" />
+        <div class="p-t-30">
+            <button class="btn btn--radius btn--green" type="submit">Ajouter</button>
+            <a class="btn btn--radius btn--red" href="@Url.Action("Index","Menus")">Retour</a>
         </div>
-    </div>
+    }
 </div>
-}
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>

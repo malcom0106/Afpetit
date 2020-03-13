@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Afpetit.Dao;
 using Afpetit.Models;
 
 namespace Afpetit.Controllers
@@ -13,15 +14,15 @@ namespace Afpetit.Controllers
     public class CommandesController : Controller
     {
         private AfpEatEntities db = new AfpEatEntities();
+        DaoCommande daoCommande = new DaoCommande(); 
 
         // GET: Commandes/HistoriqueUtilisateur
         public ActionResult HistoriqueUtilisateur()
         {
             if (Session["Utilisateur"] != null)
             {
-                Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];
-                var commandes = db.Commandes.Include(c => c.EtatCommande).Include(c => c.Restaurant).Include(c => c.Utilisateur).Where(c => c.IdUtilisateur == utilisateur.IdUtilisateur);
-                return View(commandes.ToList());
+                Utilisateur utilisateur = (Utilisateur)Session["Utilisateur"];                
+                return View(daoCommande.GetCommandesUtilisateur(utilisateur));
             }
             return RedirectToAction("Index", "Home", null);
         }
@@ -32,8 +33,7 @@ namespace Afpetit.Controllers
             if(Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                var commandes = db.Commandes.Include(c => c.EtatCommande).Include(c => c.Restaurant).Include(c => c.Utilisateur).Where(c=>c.IdRestaurant == restaurant.IdRestaurant);
-                return View(commandes.ToList());
+                return View(daoCommande.GetCommandesRestaurant(restaurant));
             }
             return RedirectToAction("ConnexionRestaurant","Restaurants",null); 
         }
@@ -45,7 +45,7 @@ namespace Afpetit.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Commande commande = db.Commandes.Find(id);
+            Commande commande = daoCommande.GetCommande((int)id);
             if (commande == null)
             {
                 return HttpNotFound();

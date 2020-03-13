@@ -8,6 +8,10 @@ namespace Afpetit.Dao
 {
     public class DaoMenu : DaoAccess
     {
+        /// <summary>
+        /// Retourne tous les menus
+        /// </summary>
+        /// <returns></returns>
         public List<Menu> GetMenu()
         {
             try
@@ -21,6 +25,11 @@ namespace Afpetit.Dao
             
         }
 
+        /// <summary>
+        /// Retourne tous les menus d'un restaurant
+        /// </summary>
+        /// <param name="IdMenu"></param>
+        /// <returns></returns>
         public Menu GetMenuById(int IdMenu)
         {
             try
@@ -34,6 +43,11 @@ namespace Afpetit.Dao
 
         }
 
+        /// <summary>
+        /// Permet de changer le statut d'un menu plutot que de le supprimer
+        /// </summary>
+        /// <param name="IdMenu"></param>
+        /// <returns></returns>
         public bool ChangeStatut(int IdMenu)
         {
             try
@@ -53,6 +67,11 @@ namespace Afpetit.Dao
             }
         }
 
+        /// <summary>
+        /// Creer un menu
+        /// </summary>
+        /// <param name="menu"></param>
+        /// <returns></returns>
         public bool CreateMenu(Menu menu)
         {
             try
@@ -67,6 +86,12 @@ namespace Afpetit.Dao
             }
         }
 
+        /// <summary>
+        /// Ajouter une categorie dans un menu
+        /// </summary>
+        /// <param name="IdMenu"></param>
+        /// <param name="IdCategorie"></param>
+        /// <returns></returns>
         public bool AddCategorieInMenu(int IdMenu, int IdCategorie)
         {
             try
@@ -84,6 +109,7 @@ namespace Afpetit.Dao
             }
             
         }
+
 
     }
 }

@@ -197,7 +197,7 @@ namespace Afpetit.Dao
             try
             {
                 Restaurant monRestaurant = db.Restaurants.Where(r => r.Login == restaurant.Login).SingleOrDefault();
-                if (Crypto.VerifyHashedPassword(monRestaurant.Password, restaurant.Password))
+                if (monRestaurant !=null && Crypto.VerifyHashedPassword(monRestaurant.Password, restaurant.Password))
                 {
                     return monRestaurant;
                 }

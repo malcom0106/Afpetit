@@ -8,5 +8,6 @@ namespace Afpetit.Utilities
     public static class Constante
     {
         public static int vignetteAccueil = 6;
+        public static int produitsParPage = 10;
     }
 }

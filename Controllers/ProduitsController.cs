@@ -18,13 +18,20 @@ namespace Afpetit.Controllers
         private AfpEatEntities db = new AfpEatEntities();
         private DaoProduit daoProduit = new DaoProduit();
         // GET: Produits
-        public ActionResult Index()
+        public ActionResult Index(int page = 1)
         {
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];                
-                return View(daoProduit.GetProduitsRestaurant(restaurant));
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
+
+                var produitsView = new ProduitViewModel
+                {
+                    ProduitParPage = Constante.produitsParPage,
+                    ListeProduits = daoProduit.GetProduitsRestaurant(restaurant),
+                    PageCourante = page
+                };
+                return View(produitsView);
             }
             else
             {

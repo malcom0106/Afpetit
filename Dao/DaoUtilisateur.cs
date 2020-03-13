@@ -144,7 +144,7 @@ namespace Afpetit.Dao
             try
             {
                 client = db.Utilisateurs.Where(u => u.Matricule == utilisateur.Matricule).FirstOrDefault();                
-                if (Crypto.VerifyHashedPassword(client.Password, utilisateur.Password))
+                if (client != null && Crypto.VerifyHashedPassword(client.Password, utilisateur.Password))
                 {
                     client.IdSession = sessionId;
                     db.SaveChanges();                    

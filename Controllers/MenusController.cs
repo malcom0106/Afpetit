@@ -6,23 +6,32 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Afpetit.Dao;
 using Afpetit.Models;
+using Afpetit.Utilities;
 
 namespace Afpetit.Controllers
 {
     public class MenusController : Controller
     {
         private AfpEatEntities db = new AfpEatEntities();
+        private DaoMenu daomenu = new DaoMenu();
 
         // GET: Menus
-        public ActionResult Index()
+        public ActionResult Index(int page = 1)
         {
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
-                var menus = db.Menus.Include(m => m.Restaurant);
-                return View(menus.ToList());
+
+                var menus = new MenuViewModel
+                {
+                    ObjetParPage = Constante.produitsParPage,
+                    ListeMenu = daomenu.GetMenuByRestaurant(restaurant),
+                    PageCourante = page
+                };
+                return View(menus);
             }
             else
             {
@@ -30,63 +39,21 @@ namespace Afpetit.Controllers
             }
             
         }
-
-        // GET: Menus/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Menu menu = db.Menus.Find(id);
-            if (menu == null)
-            {
-                return HttpNotFound();
-            }
-
-            var produits = db.Produits.Where(m => m.IdRestaurant == menu.IdRestaurant).ToList();
-
-            foreach (var categorie in menu.Categories)
-            {
-                List<Produit> produits1 = produits.Where(p => p.IdCategorie == categorie.IdCategorie).ToList();
-
-                // On crée les items d'un select (dropdownlist)
-                List<SelectListItem> items = new List<SelectListItem>();
-
-                foreach (Produit produit in produits1)
-                {
-                    items.Add(new SelectListItem { Text = produit.Nom, Value = produit.IdProduit.ToString() });
-                }
-
-                ViewData["cat" + categorie.IdCategorie] = items;
-            }
-
-            return View(menu);
-        }
-
+        
         // GET: Statut du Menu
         public ActionResult Statut(int? id)
         {
             if (Session["Restaurant"] != null)
-            {
+            { 
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-
-                Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                Menu menu = db.Menus.Find(id);
-                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
-                if (menu == null)
+                if (daomenu.ChangeStatut((int)id))
                 {
-                    return HttpNotFound();
-                }
-                else
-                {
-                    menu.Statut = !menu.Statut;
-                    db.SaveChanges();
                     return RedirectToAction("Index", "Menus");
                 }
+                return HttpNotFound();                
             }
             else
             {
@@ -99,7 +66,6 @@ namespace Afpetit.Controllers
         {
             if (Session["Restaurant"] != null)
             {
-                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 return View();
             }
@@ -114,12 +80,12 @@ namespace Afpetit.Controllers
         // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "IdMenu,IdRestaurant,Nom,Statut,Prix")] Menu menu)
+        public ActionResult Create([Bind(Include = "IdMenu,IdRestaurant,Nom,Prix")] Menu menu)
         {
             if (ModelState.IsValid)
             {
-                db.Menus.Add(menu);
-                db.SaveChanges();
+                menu.Statut = true;
+                daomenu.CreateMenu(menu);
                 return RedirectToAction("AddCategorie", new { @idmenu = menu.IdMenu });
             }
 
@@ -137,11 +103,11 @@ namespace Afpetit.Controllers
 
             if (Session["Restaurant"] != null)
             {
-                Menu menu = db.Menus.Find(idmenu);
-                Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
+                Menu menu = daomenu.GetMenuById((int)idmenu);
 
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
                 ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
+
                 return View(menu);
             }
             else
@@ -150,9 +116,8 @@ namespace Afpetit.Controllers
             }
 
         }
-        // POST: Menus/Edit/5
-        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier. Pour 
-        // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Menus/AddCategorie/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddCategorie(int? idmenu, int? idcategorie)
@@ -164,14 +129,11 @@ namespace Afpetit.Controllers
 
             if (Session["Restaurant"] != null)
             {
-                Menu menu = db.Menus.Find(idmenu);
-                Categorie categorie = db.Categories.Find(idcategorie);
-                Restaurant restaurant = (Restaurant)Session["Restaurant"];
                 ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
-                menu.Categories.Add(categorie);
-                db.SaveChanges();
                 ViewBag.IdCategorie = new SelectList(db.Categories, "IdCategorie", "Nom");
-                return View(menu);
+
+                daomenu.AddCategorieInMenu((int)idmenu, (int)idcategorie);                  
+                return View(daomenu.GetMenuById((int)idmenu));
             }
             else
             {
@@ -197,8 +159,6 @@ namespace Afpetit.Controllers
         }
 
         // POST: Menus/Edit/5
-        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier. Pour 
-        // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "IdMenu,IdRestaurant,Nom,Statut,Prix")] Menu menu)
@@ -211,33 +171,7 @@ namespace Afpetit.Controllers
             }
             ViewBag.IdRestaurant = new SelectList(db.Restaurants, "IdRestaurant", "Description", menu.IdRestaurant);
             return View(menu);
-        }
-
-        // GET: Menus/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Menu menu = db.Menus.Find(id);
-            if (menu == null)
-            {
-                return HttpNotFound();
-            }
-            return View(menu);
-        }
-
-        // POST: Menus/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Menu menu = db.Menus.Find(id);
-            db.Menus.Remove(menu);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+        } 
 
         protected override void Dispose(bool disposing)
         {

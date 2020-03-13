@@ -1,14 +1,15 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Bon Afpétit</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/formulaire.css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body>
+<body class="bg-red">
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <a class="navbar-brand" href="@Url.Action("ConnexionRestaurant","Restaurants")">Bon Afpétit ! Administration Restaurant</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarRight" aria-controls="navbarRight" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,15 +38,21 @@
             </ul>
         </div>
     </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Bon AFPétit</p>
-        </footer>
+
+    <div class="page-wrapper bg-red p-t-100 p-b-100 font-robo">
+        <div class="wrapper wrapper--w960">
+            <div class="card card-2">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <hr />
+    <footer>
+        <p>&copy; @DateTime.Now.Year - Bon AFPétit</p>
+    </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")
-        
+
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

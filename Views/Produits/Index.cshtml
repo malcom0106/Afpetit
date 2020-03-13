@@ -1,13 +1,13 @@
-﻿@model IEnumerable<Afpetit.Models.Produit>
+﻿@model Afpetit.Models.ProduitViewModel
 
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_LayoutResto.cshtml";
 }
 
-<h2 class="mt-2">Mes Produits</h2>
+<h2 class="pt-3">Mes Produits</h2>
 
-@foreach (var item in Model)
+@foreach (var item in Model.PaginatedProduits())
 {
     <div class="row col-12 align-items-center py-2">
         <div class="col-2">
@@ -47,3 +47,14 @@
         </div>
     </div>
 }
+<ul class="pagination">
+    @for (int i = 1; i <= Model.PageCount(); i++)
+    {
+        <li class="@(i == Model.PageCourante ? "page-item active" : "page-item")">
+            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+        </li>
+
+    }
+</ul>
+
+<div><a href="@Url.Action("Create","Produits")" class="btn btn-success col-12">Nouveau Produit</a></div>

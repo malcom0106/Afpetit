@@ -18,13 +18,20 @@ namespace Afpetit.Controllers
         private AfpEatEntities db = new AfpEatEntities();
         private DaoProduit daoProduit = new DaoProduit();
         // GET: Produits
-        public ActionResult Index()
+        public ActionResult Index(int page = 1)
         {
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];                
-                return View(daoProduit.GetProduitsRestaurant(restaurant));
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
+
+                var produitsView = new ProduitViewModel
+                {
+                    ProduitParPage = Constante.produitsParPage,
+                    ListeProduits = daoProduit.GetProduitsRestaurant(restaurant),
+                    PageCourante = page
+                };
+                return View(produitsView);
             }
             else
             {
@@ -100,7 +107,7 @@ namespace Afpetit.Controllers
         // POST: Produits/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "IdProduit,IdRestaurant,IdCategorie,Nom,Prix,Description,Quantite,Statut")] Produit produit, HttpPostedFileBase[] files)
+        public ActionResult Create([Bind(Include = "IdProduit,IdRestaurant,IdCategorie,Nom,Prix,Description,Quantite")] Produit produit, HttpPostedFileBase[] files)
         {
             Restaurant monRestaurant = (Restaurant)Session["Restaurant"];
             ViewBag.IdRestaurant = monRestaurant.IdRestaurant;
@@ -110,6 +117,7 @@ namespace Afpetit.Controllers
             {
                 try
                 {
+                    produit.Statut = true;
                     if (daoProduit.CreateProduit(produit, files))
                     {
                         return RedirectToAction("Index");

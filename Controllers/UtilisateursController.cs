@@ -142,9 +142,9 @@ namespace Afpetit.Controllers
                 {
                     Session["Utilisateur"] = user;
                     return RedirectToAction("Index", "Home");
-                }
-                return View();
+                }                
             }
+            ViewBag.Message = "Echec d'authentification.";
             return View();
         }
         public ActionResult Deconnexion() 

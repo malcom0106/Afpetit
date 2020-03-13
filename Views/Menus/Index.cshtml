@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Afpetit.Models.Menu>
+﻿@model Afpetit.Models.MenuViewModel
 
 @{
     ViewBag.Title = "Index";
@@ -7,7 +7,7 @@
 
 <h2 class="mt-2">Mes Menus</h2>
 
-@foreach (var item in Model)
+@foreach (var item in Model.PaginatedProduits())
 {
     <div class="row col-12 align-items-center my-1 py-1 border rounded">
         <div class="col-4">
@@ -50,5 +50,14 @@
         </div>
     </div>
 }
+<ul class="pagination">
+    @for (int i = 1; i <= Model.PageCount(); i++)
+    {
+        <li class="@(i == Model.PageCourante ? "page-item active" : "page-item")">
+            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+        </li>
+
+    }
+</ul>
 <hr />
 <div class="col-12"><a class="btn btn-outline-success col-12" href="@Url.Action("Create","Menus")">Ajouter un menu</a></div>

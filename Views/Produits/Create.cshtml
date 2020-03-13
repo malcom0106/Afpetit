@@ -4,84 +4,34 @@
     ViewBag.Title = "View";
     Layout = "~/Views/Shared/_LayoutResto.cshtml";
 }
-
-<h2>View</h2>
-
-@using (Html.BeginForm("Create", "Produits", FormMethod.Post, new { enctype = "multipart/form-data" })) 
-{
-    @Html.AntiForgeryToken()
-
-<div class="form-horizontal">
-    <h4>Produit</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.Hidden("IdRestaurant", (int)ViewBag.IdRestaurant)
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.IdCategorie, "IdCategorie", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("IdCategorie", null, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.IdCategorie, "", new { @class = "text-danger" })
+<div class="card-heading" style="background: url('../../Images/bg-heading-02.jpg') top left/cover no-repeat"></div>
+<div class="card-body">
+    <h2 class="title">Ajouter un produit</h2>
+    @using (Html.BeginForm("Create", "Produits", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("IdRestaurant", (int)ViewBag.IdRestaurant)
+        <div class="input-group">
+            @Html.DropDownList("IdCategorie", null, "Selectionner la catégorie", htmlAttributes: new { @class = "form-control col-12" })
         </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nom, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Nom, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Nom, "", new { @class = "text-danger" })
+        <div class="input-group">
+            @Html.EditorFor(model => model.Nom, new { htmlAttributes = new { @class = "input--style-2 col-12", @placeholder = "Nom" } })
         </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Prix, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Prix, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Prix, "", new { @class = "text-danger" })
+        <div class="input-group">
+            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "input--style-2 col-12", @placeholder = "Description" } })
         </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        <div class="input-group">
+            @Html.EditorFor(model => model.Prix, new { htmlAttributes = new { @class = "input--style-2 col-12", @placeholder = "Prix" } })
         </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Quantite, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Quantite, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Quantite, "", new { @class = "text-danger" })
+        <div class="input-group">
+            @Html.EditorFor(model => model.Quantite, new { htmlAttributes = new { @class = "input--style-2 col-12", @placeholder = "Production Journalière" } })
         </div>
-    </div>
-
-    <div class="form-group">
-        @Html.Label("Photos", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            <input type="file" id="files" name="files" required multiple="multiple"/>
+        <div class="input-group">
+            <input type="file" id="files" name="files" required multiple="multiple" />
         </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Statut, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            <div class="checkbox">
-                @Html.EditorFor(model => model.Statut)
-                @Html.ValidationMessageFor(model => model.Statut, "", new { @class = "text-danger" })
-            </div>
+        <div class="p-t-30">
+            <button class="btn btn--radius btn--green" type="submit">Ajouter</button>
+            <a class="btn btn--radius btn--red" href="@Url.Action("Index","Produits")">Retour</a>
         </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" />
-        </div>
-    </div>
-</div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
+    }
 </div>

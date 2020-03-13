@@ -17,8 +17,28 @@ namespace Afpetit.Dao
         /// <returns>Objet Utilisateur</returns>
         public Utilisateur GetUtilisateurById(int IdUtilisateur)
         {
-            Utilisateur user = db.Utilisateurs.Where(r => r.IdUtilisateur == IdUtilisateur).FirstOrDefault();
-            return user;
+            try
+            {
+                return db.Utilisateurs.Where(r => r.IdUtilisateur == IdUtilisateur).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+
+        public Utilisateur GetUtilisateurBySessionId(string SessionId)
+        {
+            try
+            {
+                return db.Utilisateurs.First(p => p.IdSession == SessionId);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
         }
 
         /// <summary>
@@ -27,8 +47,14 @@ namespace Afpetit.Dao
         /// <returns>List<Utilisateur></Utilisateur></returns>
         public List<Utilisateur> GetUtilisateurs()
         {
-            List<Utilisateur> utilisateurs = db.Utilisateurs.ToList();
-            return utilisateurs;
+            try
+            {
+                return db.Utilisateurs.ToList();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -118,7 +144,7 @@ namespace Afpetit.Dao
             try
             {
                 client = db.Utilisateurs.Where(u => u.Matricule == utilisateur.Matricule).FirstOrDefault();                
-                if (Crypto.VerifyHashedPassword(client.Password, utilisateur.Password))
+                if (client != null && Crypto.VerifyHashedPassword(client.Password, utilisateur.Password))
                 {
                     client.IdSession = sessionId;
                     db.SaveChanges();                    
@@ -129,8 +155,26 @@ namespace Afpetit.Dao
             {
 
                 throw ex;
-            }
-            
+            }            
         }
+
+        /// <summary>
+        /// Retourne le sessionutilisateur stocké en bdd
+        /// </summary>
+        /// <param name="IdSession"></param>
+        /// <returns></returns>
+        public SessionUtilisateur GetSessionUtilisateur(string IdSession)
+        {
+            try
+            {
+                return db.SessionUtilisateurs.Find(IdSession);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
     }
 }

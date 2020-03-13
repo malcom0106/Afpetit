@@ -144,6 +144,7 @@
     <Compile Include="Dao\DaoMenu.cs" />
     <Compile Include="Dao\DaoProduit.cs" />
     <Compile Include="Dao\DaoRestaurant.cs" />
+    <Compile Include="Dao\DaoTypeCuisine.cs" />
     <Compile Include="Dao\DaoUtilisateur.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Afpetit.Dao;
 using Afpetit.Models;
+using Afpetit.Utilities;
 
 namespace Afpetit.Controllers
 {
@@ -17,13 +18,20 @@ namespace Afpetit.Controllers
         private DaoMenu daomenu = new DaoMenu();
 
         // GET: Menus
-        public ActionResult Index()
+        public ActionResult Index(int page = 1)
         {
             if (Session["Restaurant"] != null)
             {
                 Restaurant restaurant = (Restaurant)Session["Restaurant"];
-                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];                
-                return View(daomenu.GetMenu());
+                ViewBag.Restaurant = (Restaurant)Session["Restaurant"];
+
+                var menus = new MenuViewModel
+                {
+                    ObjetParPage = Constante.produitsParPage,
+                    ListeMenu = daomenu.GetMenuByRestaurant(restaurant),
+                    PageCourante = page
+                };
+                return View(menus);
             }
             else
             {

@@ -196,6 +196,7 @@
     </Compile>
     <Compile Include="Models\ProduitComposePanier.cs" />
     <Compile Include="Models\ProduitPanier.cs" />
+    <Compile Include="Models\MenuViewModel.cs" />
     <Compile Include="Models\ProduitViewModel.cs" />
     <Compile Include="Models\Restaurant.cs">
       <DependentUpon>Model1.tt</DependentUpon>

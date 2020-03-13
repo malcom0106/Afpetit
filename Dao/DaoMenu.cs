@@ -28,6 +28,24 @@ namespace Afpetit.Dao
         /// <summary>
         /// Retourne tous les menus d'un restaurant
         /// </summary>
+        /// <param name="restaurant"></param>
+        /// <returns></returns>
+        public List<Menu> GetMenuByRestaurant(Restaurant restaurant)
+        {
+            try
+            {
+                return db.Menus.Where(m=>m.IdRestaurant == restaurant.IdRestaurant).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        /// <summary>
+        /// Retourne le menu via son Id
+        /// </summary>
         /// <param name="IdMenu"></param>
         /// <returns></returns>
         public Menu GetMenuById(int IdMenu)

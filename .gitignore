@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Fichier de Release
+Web.Release.config
+
 # User-specific files
 *.rsuser
 *.suo

@@ -3,15 +3,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# Fichier de Release
-Web.Release.config
-
+*.config
 # User-specific files
 *.rsuser
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
+*.config
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
